@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "pycocoedit"
+version = "0.0.1"
+description = ""
+authors = ["Nao-Y1996 <60519909+Nao-Y1996@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.2"
+mypy = "^1.10.0"
+ruff = "^0.4.9"
+isort = "^5.13.2"
+black = "^24.4.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
