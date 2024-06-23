@@ -1,10 +1,17 @@
+import copy
 import json
 from typing import Any
 
-from pycocoedit.filter import (BaseExclusionFilter, BaseFilter,
-                               BaseInclusionFilter, CategoryExcludeFilter,
-                               CategoryIncludeFilter, FilterType,
-                               ImageNameExcludeFilter, ImageNameIncludeFilter)
+from pycocoedit.filter import (
+    BaseExclusionFilter,
+    BaseFilter,
+    BaseInclusionFilter,
+    CategoryExcludeFilter,
+    CategoryIncludeFilter,
+    FilterType,
+    ImageNameExcludeFilter,
+    ImageNameIncludeFilter,
+)
 
 
 def validate_keys(data: list[dict], required_keys: list[str], target: str) -> None:
@@ -49,11 +56,13 @@ class Filters:
 
 
 class CocoEditor:
+    """
+    Coco format dataset editor.
+    """
 
     def __init__(self, annotation: str | dict[str, Any]):
-        dataset: dict[str, Any] = {}
+
         if isinstance(annotation, dict):
-            import copy
             dataset = copy.deepcopy(annotation)
         else:
             with open(annotation) as f:
@@ -62,12 +71,12 @@ class CocoEditor:
         self.annotations: list[dict] = dataset["annotations"]
         self.categories: list[dict] = dataset["categories"]
         self.licenses: list[dict] = dataset.get("licenses", [])
+        self.info: dict = dataset.get("info", {})
+
         validate_images(self.images)
         validate_categories(self.categories)
         validate_annotations(self.annotations)
 
-        self.licenses = dataset.get("licenses", [])
-        self.info = dataset.get("info", "")
         self.image_filters: Filters = Filters()
         self.category_filters: Filters = Filters()
         self.annotation_filters: Filters = Filters()
@@ -76,6 +85,9 @@ class CocoEditor:
         self.filter_applied = False
 
     def __add_filter(self, filter: BaseFilter, target_type: str):
+        """
+        Add a filter to the dataset.
+        """
 
         if target_type not in ["image", "category", "annotation", "license"]:
             raise ValueError(
@@ -96,6 +108,16 @@ class CocoEditor:
         include_files: list[str] | None = None,
         exclude_files: list[str] | None = None,
     ) -> "CocoEditor":
+        """
+        Add a file name filter.
+
+        Parameters
+        ----------
+        include_files : list[str] | None
+            File names to be included.
+        exclude_files : list[str] | None
+            File names to be excluded.
+        """
         if include_files is not None:
             self.__add_filter(
                 ImageNameIncludeFilter(file_names=include_files), target_type="image"
@@ -111,6 +133,16 @@ class CocoEditor:
         include_names: list[str] | None = None,
         exclude_names: list[str] | None = None,
     ) -> "CocoEditor":
+        """
+        Add a category filter.
+
+        Parameters
+        ----------
+        include_names : list[str] | None
+            Category names to be included.
+        exclude_names : list[str] | None
+            Category names to be excluded.
+        """
         if include_names is not None:
             self.__add_filter(
                 CategoryIncludeFilter(category_names=include_names),
@@ -126,6 +158,16 @@ class CocoEditor:
     def add_custom_filter(
         self, custom_filter: BaseInclusionFilter | BaseExclusionFilter, target_type: str
     ) -> "CocoEditor":
+        """
+        Add a custom filter.
+
+        Parameters
+        ----------
+        custom_filter : BaseInclusionFilter | BaseExclusionFilter
+            Custom filter to be added.
+        target_type : str
+            Type of the target data. One of ["image", "category", "annotation", "license"].
+        """
         if target_type is None:
             raise ValueError(
                 "target_type should be one of [image, category, annotation, license]"
@@ -184,11 +226,56 @@ class CocoEditor:
         self.filter_applied = True
         return self
 
+    def reset(self, annotation: str | dict[str, Any]) -> "CocoEditor":
+        """
+        Reset the dataset to the original state.
+        """
+
+        # TODO refactor this part. This process is equivalent to __init__ method. But, basically call __init__ method
+        #  is not recommended and mypy raises an error when calling __init__ method. error: Accessing "__init__" on
+        #  an instance is unsound, since instance.__init__ could be from an incompatible subclass
+        if isinstance(annotation, dict):
+            dataset = copy.deepcopy(annotation)
+        else:
+            with open(annotation) as f:
+                dataset = json.load(f)
+        self.images = dataset["images"]
+        self.annotations = dataset["annotations"]
+        self.categories = dataset["categories"]
+        self.licenses = dataset.get("licenses", [])
+        self.info = dataset.get("info", {})
+
+        validate_images(self.images)
+        validate_categories(self.categories)
+        validate_annotations(self.annotations)
+
+        self.image_filters = Filters()
+        self.category_filters = Filters()
+        self.annotation_filters = Filters()
+        self.licenses_filters = Filters()
+
+        self.filter_applied = False
+        return self
+
     def correct(
         self, correct_image: bool = True, correct_category: bool = False
     ) -> dict:
         """
         Correct data inconsistencies after applying filters.
+
+        Parameters
+        ----------
+        correct_image : bool
+            whether to remove images with no annotations.
+            default is True.
+        correct_category : bool
+            whether to remove categories with no annotations.
+            default is False.
+
+        Returns
+        -------
+        dict
+            Corrected dataset including info, licenses, images, categories and annotations.
         """
         if not self.filter_applied:
             self.apply_filter()
@@ -231,7 +318,9 @@ class CocoEditor:
                     _categories.append(cat)
             self.categories = _categories
 
+        # TODO Correct licenses
         return {
+            "info": self.info,
             "licenses": self.licenses,
             "images": self.images,
             "categories": self.categories,

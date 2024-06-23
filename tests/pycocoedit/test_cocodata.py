@@ -249,3 +249,35 @@ def test_add_custom_filter():
     assert editor.annotations == [annotations[1]]
     assert editor.images == [images[1]]
     assert editor.categories == categories
+
+
+def test_reset():
+    class SimpleInclusionFilter(BaseExclusionFilter):
+        def apply(self, data: dict) -> bool:
+            return True
+
+    editor = CocoEditor(annotation)
+    editor.add_file_name_filter(
+        include_files=["image0.jpg", "image1.jpg"], exclude_files=["image1.jpg"]
+    )
+    editor.add_category_filter(
+        include_names=["category0", "category1"], exclude_names=["category0"]
+    )
+    editor.add_custom_filter(SimpleInclusionFilter(), "annotation")
+    editor.apply_filter().correct()
+
+    editor.reset(annotation)
+
+    assert editor.info == info
+    assert editor.licenses == licenses
+    assert editor.images == images
+    assert editor.annotations == annotations
+    assert editor.categories == categories
+    assert len(editor.image_filters.include_filters) == 0
+    assert len(editor.image_filters.exclude_filters) == 0
+    assert len(editor.category_filters.include_filters) == 0
+    assert len(editor.category_filters.exclude_filters) == 0
+    assert len(editor.annotation_filters.include_filters) == 0
+    assert len(editor.annotation_filters.exclude_filters) == 0
+    assert len(editor.licenses_filters.include_filters) == 0
+    assert len(editor.licenses_filters.exclude_filters) == 0

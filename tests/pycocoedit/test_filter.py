@@ -1,8 +1,12 @@
 import pytest
 
-from pycocoedit.filter import (BoxAreaIncludeFilter, CategoryExcludeFilter,
-                               CategoryIncludeFilter, ImageNameExcludeFilter,
-                               ImageNameIncludeFilter)
+from pycocoedit.filter import (
+    BoxAreaIncludeFilter,
+    CategoryExcludeFilter,
+    CategoryIncludeFilter,
+    ImageNameExcludeFilter,
+    ImageNameIncludeFilter,
+)
 
 
 # ImageFileIncludeFilterのテスト

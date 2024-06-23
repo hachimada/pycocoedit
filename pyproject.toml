@@ -19,3 +19,9 @@ black = "^24.4.2"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+allow_redefinition = true
+ignore_missing_imports = true
+max_line_length = 120
+
