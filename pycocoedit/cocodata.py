@@ -8,7 +8,7 @@ from pycocoedit.filter import (
     BaseInclusionFilter,
     CategoryExcludeFilter,
     CategoryIncludeFilter,
-    FilterType,
+    Filters,
     ImageNameExcludeFilter,
     ImageNameIncludeFilter,
 )
@@ -36,23 +36,6 @@ def validate_categories(categories: list[dict]) -> None:
 def validate_annotations(annotations: list[dict]) -> None:
     required_keys = ["id", "image_id", "category_id", "bbox", "area", "segmentation"]
     validate_keys(annotations, required_keys, "annotation")
-
-
-class Filters:
-
-    def __init__(self):
-        self.include_filters: list[BaseInclusionFilter] = []
-        self.exclude_filters: list[BaseExclusionFilter] = []
-
-    def add(self, filter: BaseFilter):
-        if filter.filter_type == FilterType.INCLUSION and isinstance(
-            filter, BaseInclusionFilter
-        ):
-            self.include_filters.append(filter)
-        if filter.filter_type == FilterType.EXCLUSION and isinstance(
-            filter, BaseExclusionFilter
-        ):
-            self.exclude_filters.append(filter)
 
 
 class CocoEditor:

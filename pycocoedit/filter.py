@@ -28,6 +28,23 @@ class BaseExclusionFilter(BaseFilter, ABC):
         self.filter_type: FilterType = FilterType.EXCLUSION
 
 
+class Filters:
+
+    def __init__(self):
+        self.include_filters: list[BaseInclusionFilter] = []
+        self.exclude_filters: list[BaseExclusionFilter] = []
+
+    def add(self, filter: BaseFilter):
+        if filter.filter_type == FilterType.INCLUSION and isinstance(
+            filter, BaseInclusionFilter
+        ):
+            self.include_filters.append(filter)
+        if filter.filter_type == FilterType.EXCLUSION and isinstance(
+            filter, BaseExclusionFilter
+        ):
+            self.exclude_filters.append(filter)
+
+
 class ImageNameIncludeFilter(BaseInclusionFilter):
     def __init__(self, file_names: list[str]):
         super().__init__()
