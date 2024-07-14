@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ 3.9.13, 3.10.14, 3.11.9, 3.12.4 ]
+        python-version: [ 3.10.14, 3.11.9, 3.12.4 ]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
@@ -31,4 +31,3 @@ jobs:
       - name: Run tests
         run: |
           poetry run pytest
-        continue-on-error: true  # Continue on error to run all tests
