@@ -3,16 +3,50 @@ from enum import Enum
 
 
 class FilterType(Enum):
+    """
+    Enum class for filter types.
+
+    Attributes
+    ----------
+    INCLUSION : int
+        The inclusion filter type. Value is 1.
+    EXCLUSION : int
+        The exclusion filter type. Value is 2.
+    """
+
     INCLUSION = 1
     EXCLUSION = 2
 
 
 class BaseFilter(ABC):
+    """Base class for filters.
+
+    Attributes
+    ----------
+    filter_type : FilterType | None
+        The type of the filter.
+    """
+
     def __init__(self):
         self.filter_type: FilterType | None = None
 
     @abstractmethod
     def apply(self, data: dict) -> bool:
+        """Apply the filter to the data.
+
+        Parameters:
+        -----------
+        data : dict
+            The data to filter.
+            data is expected to be as follows
+            - element of the images in the COCO format
+            - element of the annotations in the COCO format
+            - element of the categories in the COCO format
+            - element of the licenses in the COCO format
+            - info in the COCO format
+            - other dict elements
+
+        """
         raise NotImplementedError
 
 
