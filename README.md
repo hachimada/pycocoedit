@@ -29,7 +29,7 @@ category_filter = CategoryNameFilter(FilterType.INCLUSION, ["cat", "dog"])
 
 coco = CocoEditor(annotation)
 # apply filters and export new annotation
-coco.add_filter(file_filter).add_filter(category_filter).apply_filter().export(new_annotation)
+coco.add_filter(file_filter).add_filter(category_filter).apply_filter().save(new_annotation)
 ```
 
 Example of custom filter for annotations:
@@ -38,6 +38,7 @@ In this example, we create a custom filter that only includes annotations with b
 ```python
 from pycocoedit.cocodata import CocoEditor
 from pycocoedit.filter import BaseFilter, FilterType, TargetType
+
 
 # only include annotations with area less than 100
 class SmallBboxIncludeFilter(BaseFilter):
@@ -53,7 +54,7 @@ new_annotation = "path/to/new_annotation.json"
 
 coco = CocoEditor(annotation)
 # apply custom filter and export new annotation
-coco.add_filter(SmallBboxIncludeFilter()).apply_filter().export(new_annotation)
+coco.add_filter(SmallBboxIncludeFilter()).apply_filter().save(new_annotation)
 ```
 
 ## Installation

@@ -230,7 +230,7 @@ class CocoEditor:
             "annotations": self.annotations,
         }
 
-    def export(
+    def save(
         self, file_path: str, correct_image: bool = True, correct_category: bool = False
     ) -> None:
         """
