@@ -1,7 +1,14 @@
 import pytest
 
-from pycocoedit.cocodata import CocoEditor, Filters, validate_keys
-from pycocoedit.filter import BaseExclusionFilter, BaseInclusionFilter
+from pycocoedit.cocodata import CocoEditor, validate_keys
+from pycocoedit.filter import (
+    BaseFilter,
+    CategoryNameFilter,
+    Filters,
+    FilterType,
+    ImageFileNameFilter,
+    TargetType,
+)
 
 
 def test_validate_keys_success():
@@ -28,23 +35,29 @@ def test_filters_add():
     assert len(filters.include_filters) == 0
     assert len(filters.exclude_filters) == 0
 
-    class MockFilter(BaseInclusionFilter):
+    class MockInclusionFilter(BaseFilter):
+        def __init__(self):
+            super().__init__(FilterType.INCLUSION, TargetType.IMAGE)
+
         def apply(self, data: dict) -> bool:
             return True
 
-    filters.add(MockFilter())
+    filters.add(MockInclusionFilter())
     assert len(filters.include_filters) == 1
     assert len(filters.exclude_filters) == 0
 
-    filters.add(MockFilter())
+    filters.add(MockInclusionFilter())
     assert len(filters.include_filters) == 2
     assert len(filters.exclude_filters) == 0
 
-    class MockFilter(BaseExclusionFilter):
+    class MockExclusionFilter(BaseFilter):
+        def __init__(self):
+            super().__init__(FilterType.EXCLUSION, TargetType.IMAGE)
+
         def apply(self, data: dict) -> bool:
             return True
 
-    filters.add(MockFilter())
+    filters.add(MockExclusionFilter())
     assert len(filters.include_filters) == 2
     assert len(filters.exclude_filters) == 1
 
@@ -131,9 +144,11 @@ def test_add_file_name_filter():
     assert len(editor.image_filters.include_filters) == 0
     assert len(editor.image_filters.exclude_filters) == 0
 
-    editor.add_file_name_filter(include_files=["image0.jpg", "image1.jpg"])
-    assert len(editor.image_filters.include_filters) == 1
-    assert len(editor.image_filters.exclude_filters) == 0
+    include_filter = ImageFileNameFilter(
+        FilterType.INCLUSION, ["image0.jpg", "image1.jpg"]
+    )
+
+    editor.add_filter(include_filter)
     editor.apply_filter()
     assert editor.images == [images[0], images[1]]
     assert editor.images[0]["file_name"] == "image0.jpg"
@@ -143,9 +158,8 @@ def test_add_file_name_filter():
     assert editor.annotations == annotations
     assert editor.categories == categories
 
-    editor.add_file_name_filter(exclude_files=["image1.jpg"])
-    assert len(editor.image_filters.include_filters) == 1
-    assert len(editor.image_filters.exclude_filters) == 1
+    exclude_filter = ImageFileNameFilter(FilterType.EXCLUSION, ["image1.jpg"])
+    editor.add_filter(exclude_filter)
     editor.apply_filter()
     assert editor.images == [images[0]]
     assert editor.images[0]["file_name"] == "image0.jpg"
@@ -170,11 +184,13 @@ def test_add_file_name_filter():
 
 
 def test_add_category_filter():
-    # check include filter
     editor = CocoEditor(annotation)
-    editor.add_category_filter(include_names=["category0", "category1"])
-    assert len(editor.category_filters.include_filters) == 1
-    assert len(editor.category_filters.exclude_filters) == 0
+
+    # check include filter
+    include_filter = CategoryNameFilter(
+        FilterType.INCLUSION, ["category0", "category1"]
+    )
+    editor.add_filter(include_filter)
     editor.apply_filter()
     assert editor.info == info
     assert editor.licenses == licenses
@@ -185,9 +201,8 @@ def test_add_category_filter():
     assert editor.categories[1]["name"] == "category1"
 
     # check exclude filter
-    editor.add_category_filter(exclude_names=["category0"])
-    assert len(editor.category_filters.include_filters) == 1
-    assert len(editor.category_filters.exclude_filters) == 1
+    exclude_filter = CategoryNameFilter(FilterType.EXCLUSION, ["category0"])
+    editor.add_filter(exclude_filter)
     editor.apply_filter()
     assert editor.info == info
     assert editor.licenses == licenses
@@ -214,12 +229,15 @@ def test_add_category_filter():
 
 
 def test_add_custom_filter():
-    class AreaInclusionFilter(BaseInclusionFilter):
+    class AreaInclusionFilter(BaseFilter):
+        def __init__(self):
+            super().__init__(FilterType.INCLUSION, TargetType.ANNOTATION)
+
         def apply(self, data: dict) -> bool:
             return data["area"] > 100
 
     editor = CocoEditor(annotation)
-    editor.add_custom_filter(AreaInclusionFilter(), "annotation")
+    editor.add_filter(AreaInclusionFilter())
     assert len(editor.annotation_filters.include_filters) == 1
     assert len(editor.annotation_filters.exclude_filters) == 0
     editor.apply_filter()
@@ -229,11 +247,14 @@ def test_add_custom_filter():
     assert editor.images == images
     assert editor.categories == categories
 
-    class AreaExclusionFilter(BaseExclusionFilter):
+    class AreaExclusionFilter(BaseFilter):
+        def __init__(self):
+            super().__init__(FilterType.EXCLUSION, TargetType.ANNOTATION)
+
         def apply(self, data: dict) -> bool:
             return data["area"] > 250
 
-    editor.add_custom_filter(AreaExclusionFilter(), "annotation")
+    editor.add_filter(AreaExclusionFilter())
     assert len(editor.annotation_filters.include_filters) == 1
     assert len(editor.annotation_filters.exclude_filters) == 1
     editor.apply_filter()
@@ -252,18 +273,26 @@ def test_add_custom_filter():
 
 
 def test_reset():
-    class SimpleInclusionFilter(BaseExclusionFilter):
+    class SimpleInclusionFilter(BaseFilter):
         def apply(self, data: dict) -> bool:
             return True
 
+    simple_filter = SimpleInclusionFilter(
+        target_type=TargetType.ANNOTATION, filter_type=FilterType.INCLUSION
+    )
+
     editor = CocoEditor(annotation)
-    editor.add_file_name_filter(
-        include_files=["image0.jpg", "image1.jpg"], exclude_files=["image1.jpg"]
+    editor.add_filter(
+        ImageFileNameFilter(FilterType.INCLUSION, ["image0.jpg", "image1.jpg"])
     )
-    editor.add_category_filter(
-        include_names=["category0", "category1"], exclude_names=["category0"]
+    editor.add_filter(ImageFileNameFilter(FilterType.EXCLUSION, ["image1.jpg"]))
+
+    editor.add_filter(
+        CategoryNameFilter(FilterType.INCLUSION, ["category0", "category1"])
     )
-    editor.add_custom_filter(SimpleInclusionFilter(), "annotation")
+    editor.add_filter(CategoryNameFilter(FilterType.EXCLUSION, ["category0"]))
+
+    editor.add_filter(simple_filter)
     editor.apply_filter().correct()
 
     editor.reset(annotation)

@@ -2,16 +2,7 @@ import copy
 import json
 from typing import Any
 
-from pycocoedit.filter import (
-    BaseExclusionFilter,
-    BaseFilter,
-    BaseInclusionFilter,
-    CategoryExcludeFilter,
-    CategoryIncludeFilter,
-    Filters,
-    ImageNameExcludeFilter,
-    ImageNameIncludeFilter,
-)
+from pycocoedit.filter import BaseFilter, Filters, TargetType
 
 
 def validate_keys(data: list[dict], required_keys: list[str], target: str) -> None:
@@ -67,95 +58,24 @@ class CocoEditor:
 
         self.filter_applied = False
 
-    def __add_filter(self, filter: BaseFilter, target_type: str):
+    def add_filter(self, filter: BaseFilter) -> "CocoEditor":
         """
-        Add a filter to the dataset.
+        Add a filter.
+
+        Parameters
+        ----------
+        filter : BaseFilter
+            filter to be added.
         """
 
-        if target_type not in ["image", "category", "annotation", "license"]:
-            raise ValueError(
-                "target_type should be one of [image, category, annotation, license]"
-            )
-
-        if target_type == "image":
+        if filter.target_type == TargetType.IMAGE:
             self.image_filters.add(filter)
-        if target_type == "category":
+        if filter.target_type == TargetType.CATEGORY:
             self.category_filters.add(filter)
-        if target_type == "annotation":
+        if filter.target_type == TargetType.ANNOTATION:
             self.annotation_filters.add(filter)
-        if target_type == "license":
+        if filter.target_type == TargetType.LICENSE:
             self.licenses_filters.add(filter)
-
-    def add_file_name_filter(
-        self,
-        include_files: list[str] | None = None,
-        exclude_files: list[str] | None = None,
-    ) -> "CocoEditor":
-        """
-        Add a file name filter.
-
-        Parameters
-        ----------
-        include_files : list[str] | None
-            File names to be included.
-        exclude_files : list[str] | None
-            File names to be excluded.
-        """
-        if include_files is not None:
-            self.__add_filter(
-                ImageNameIncludeFilter(file_names=include_files), target_type="image"
-            )
-        if exclude_files is not None:
-            self.__add_filter(
-                ImageNameExcludeFilter(file_names=exclude_files), target_type="image"
-            )
-        return self
-
-    def add_category_filter(
-        self,
-        include_names: list[str] | None = None,
-        exclude_names: list[str] | None = None,
-    ) -> "CocoEditor":
-        """
-        Add a category filter.
-
-        Parameters
-        ----------
-        include_names : list[str] | None
-            Category names to be included.
-        exclude_names : list[str] | None
-            Category names to be excluded.
-        """
-        if include_names is not None:
-            self.__add_filter(
-                CategoryIncludeFilter(category_names=include_names),
-                target_type="category",
-            )
-        if exclude_names is not None:
-            self.__add_filter(
-                CategoryExcludeFilter(category_names=exclude_names),
-                target_type="category",
-            )
-        return self
-
-    def add_custom_filter(
-        self, custom_filter: BaseInclusionFilter | BaseExclusionFilter, target_type: str
-    ) -> "CocoEditor":
-        """
-        Add a custom filter.
-
-        Parameters
-        ----------
-        custom_filter : BaseInclusionFilter | BaseExclusionFilter
-            Custom filter to be added.
-        target_type : str
-            Type of the target data. One of ["image", "category", "annotation", "license"].
-        """
-        if target_type is None:
-            raise ValueError(
-                "target_type should be one of [image, category, annotation, license]"
-            )
-        self.__add_filter(custom_filter, target_type=target_type)
         return self
 
     def apply_filter(self) -> "CocoEditor":
@@ -187,8 +107,8 @@ class CocoEditor:
 
         for i in range(len(targets)):
             filters: Filters = all_filters[i]
-            include_filters: list[BaseInclusionFilter] = filters.include_filters
-            exclude_filters: list[BaseExclusionFilter] = filters.exclude_filters
+            include_filters: list[BaseFilter] = filters.include_filters
+            exclude_filters: list[BaseFilter] = filters.exclude_filters
             if len(include_filters) != 0:
                 new_dicts = []
                 for d in targets[i]:

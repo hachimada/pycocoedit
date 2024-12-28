@@ -1,15 +1,14 @@
 import pytest
 
 from pycocoedit.filter import (
-    BoxAreaIncludeFilter,
-    CategoryExcludeFilter,
-    CategoryIncludeFilter,
-    ImageNameExcludeFilter,
-    ImageNameIncludeFilter,
+    BoxAreaFilter,
+    CategoryNameFilter,
+    FilterType,
+    ImageFileNameFilter,
 )
 
 
-# ImageFileIncludeFilterのテスト
+# ImageFileNameFilter(include)のテスト
 @pytest.mark.parametrize(
     "file_names, data, expected",
     [
@@ -19,11 +18,11 @@ from pycocoedit.filter import (
     ],
 )
 def test_image_file_include_filter(file_names, data, expected):
-    image_filter = ImageNameIncludeFilter(file_names)
+    image_filter = ImageFileNameFilter(FilterType.INCLUSION, file_names)
     assert image_filter.apply(data) == expected
 
 
-# ImageFileExcludeFilterのテスト
+# ImageFileNameFilter(exclude)のテスト
 @pytest.mark.parametrize(
     "file_names, data, expected",
     [
@@ -33,11 +32,11 @@ def test_image_file_include_filter(file_names, data, expected):
     ],
 )
 def test_image_file_exclude_filter(file_names, data, expected):
-    image_filter = ImageNameExcludeFilter(file_names)
+    image_filter = ImageFileNameFilter(FilterType.EXCLUSION, file_names)
     assert image_filter.apply(data) == expected
 
 
-# CategoryIncludeFilterのテスト
+# CategoryNameFilter(include)のテスト
 @pytest.mark.parametrize(
     "category_names, data, expected",
     [
@@ -47,11 +46,11 @@ def test_image_file_exclude_filter(file_names, data, expected):
     ],
 )
 def test_category_include_filter(category_names, data, expected):
-    category_filter = CategoryIncludeFilter(category_names)
+    category_filter = CategoryNameFilter(FilterType.INCLUSION, category_names)
     assert category_filter.apply(data) == expected
 
 
-# CategoryExcludeFilterのテスト
+# CategoryNameFilter(exclude)のテスト
 @pytest.mark.parametrize(
     "category_names, data, expected",
     [
@@ -61,11 +60,11 @@ def test_category_include_filter(category_names, data, expected):
     ],
 )
 def test_category_exclude_filter(category_names, data, expected):
-    category_filter = CategoryExcludeFilter(category_names)
+    category_filter = CategoryNameFilter(FilterType.EXCLUSION, category_names)
     assert category_filter.apply(data) == expected
 
 
-# BoxAreaIncludeFilterのテスト
+# BoxAreaFilterのテスト
 @pytest.mark.parametrize(
     "min_area, max_area, data, expected",
     [
@@ -84,5 +83,7 @@ def test_category_exclude_filter(category_names, data, expected):
     ],
 )
 def test_box_area_include_filter(min_area, max_area, data, expected):
-    area_filter = BoxAreaIncludeFilter(min_area=min_area, max_area=max_area)
-    assert area_filter.apply(data) == expected
+    include_filter = BoxAreaFilter(
+        FilterType.INCLUSION, min_area=min_area, max_area=max_area
+    )
+    assert include_filter.apply(data) == expected
