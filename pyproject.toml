@@ -6,7 +6,7 @@ authors = ["Nao-Y1996 <60519909+Nao-Y1996@users.noreply.github.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.10, <3.13"
+python = ">=3.10"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -20,8 +20,9 @@ black = "^24.4.2"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.ruff]
+line-length = 120
+
 [tool.mypy]
 allow_redefinition = true
 ignore_missing_imports = true
-max_line_length = 120
-
