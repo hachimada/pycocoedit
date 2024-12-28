@@ -62,6 +62,272 @@ def test_filters_add():
     assert len(filters.exclude_filters) == 1
 
 
+def test_correct__no_change():
+    # given
+    dataset = {
+        "info": {},
+        "licenses": [],
+        "images": [
+            {
+                "file_name": "image0.jpg",
+                "id": 1,
+                "height": 100,
+                "width": 100,
+            },
+            {
+                "file_name": "image1.jpg",
+                "id": 2,
+                "height": 200,
+                "width": 200,
+            },
+        ],
+        "annotations": [
+            {
+                "id": 1,
+                "image_id": 1,
+                "category_id": 1,
+                "segmentation": [],
+                "area": 100,
+                "bbox": [0, 0, 10, 10],
+            },
+            {
+                "id": 2,
+                "image_id": 2,
+                "category_id": 2,
+                "segmentation": [],
+                "area": 100,
+                "bbox": [0, 0, 10, 10],
+            },
+        ],
+        "categories": [
+            {"id": 1, "name": "category1", "supercategory": "category1"},
+            {"id": 2, "name": "category2", "supercategory": "category2"},
+        ],
+    }
+
+    # when
+    editor = CocoEditor(dataset)
+    editor.correct()
+
+    # then
+    assert editor.get_dataset() == dataset
+
+
+def test_correct__remove_ann_with_no_category():
+    # given
+    dataset = {
+        "info": {},
+        "licenses": [],
+        "images": [
+            {
+                "file_name": "image0.jpg",
+                "id": 1,
+                "height": 100,
+                "width": 100,
+            },
+            {
+                "file_name": "image1.jpg",
+                "id": 2,
+                "height": 200,
+                "width": 200,
+            },
+        ],
+        "annotations": [
+            {
+                "id": 1,
+                "image_id": 1,
+                "category_id": 1,
+                "segmentation": [],
+                "area": 100,
+                "bbox": [0, 0, 10, 10],
+            },
+            {
+                "id": 2,
+                "image_id": 2,
+                "category_id": 2,
+                "segmentation": [],
+                "area": 100,
+                "bbox": [0, 0, 10, 10],
+            },
+        ],
+        "categories": [
+            {"id": 1, "name": "category1", "supercategory": "category1"},
+        ],
+    }
+
+    # when
+    editor = CocoEditor(dataset)
+    editor.correct(correct_image=False)
+
+    # then
+    assert editor.get_dataset().get("images") == dataset["images"]
+    assert editor.get_dataset().get("annotations") == [dataset["annotations"][0]]
+    assert editor.get_dataset().get("categories") == dataset["categories"]
+
+
+def test_correct__remove_ann_with_no_image():
+    # given
+    dataset = {
+        "info": {},
+        "licenses": [],
+        "images": [
+            {
+                "file_name": "image0.jpg",
+                "id": 1,
+                "height": 100,
+                "width": 100,
+            },
+        ],
+        "annotations": [
+            {
+                "id": 1,
+                "image_id": 1,
+                "category_id": 1,
+                "segmentation": [],
+                "area": 100,
+                "bbox": [0, 0, 10, 10],
+            },
+            {
+                "id": 2,
+                "image_id": 2,
+                "category_id": 2,
+                "segmentation": [],
+                "area": 100,
+                "bbox": [0, 0, 10, 10],
+            },
+        ],
+        "categories": [
+            {"id": 1, "name": "category1", "supercategory": "category1"},
+            {"id": 2, "name": "category2", "supercategory": "category2"},
+        ],
+    }
+
+    # when
+    editor = CocoEditor(dataset)
+    editor.correct()
+
+    # then
+    assert editor.get_dataset().get("images") == dataset["images"]
+    assert editor.get_dataset().get("annotations") == [dataset["annotations"][0]]
+    assert editor.get_dataset().get("categories") == dataset["categories"]
+
+
+def test_correct__remove_image_with_no_annotation():
+    # given
+    dataset = {
+        "info": {},
+        "licenses": [],
+        "images": [
+            {
+                "file_name": "image0.jpg",
+                "id": 1,
+                "height": 100,
+                "width": 100,
+            },
+            {
+                "file_name": "image1.jpg",
+                "id": 2,
+                "height": 200,
+                "width": 200,
+            },
+        ],
+        "annotations": [
+            {
+                "id": 1,
+                "image_id": 1,
+                "category_id": 1,
+                "segmentation": [],
+                "area": 100,
+                "bbox": [0, 0, 10, 10],
+            },
+        ],
+        "categories": [
+            {"id": 1, "name": "category1", "supercategory": "category1"},
+            {"id": 2, "name": "category2", "supercategory": "category2"},
+        ],
+    }
+
+    # when
+    editor = CocoEditor(dataset)
+    editor.correct(correct_image=True)
+
+    # then
+    assert editor.get_dataset().get("images") == [dataset["images"][0]]
+    assert editor.get_dataset().get("annotations") == dataset["annotations"]
+    assert editor.get_dataset().get("categories") == dataset["categories"]
+
+    # when
+    editor = CocoEditor(dataset)
+    editor.correct(correct_image=False)
+
+    # then
+    assert editor.get_dataset() == dataset
+
+
+def test_correct__remove_category_with_no_annotation():
+    # given
+    dataset = {
+        "info": {},
+        "licenses": [],
+        "images": [
+            {
+                "file_name": "image0.jpg",
+                "id": 1,
+                "height": 100,
+                "width": 100,
+            },
+            {
+                "file_name": "image1.jpg",
+                "id": 2,
+                "height": 200,
+                "width": 200,
+            },
+        ],
+        "annotations": [
+            {
+                "id": 1,
+                "image_id": 1,
+                "category_id": 1,
+                "segmentation": [],
+                "area": 100,
+                "bbox": [0, 0, 10, 10],
+            },
+            {
+                "id": 2,
+                "image_id": 2,
+                "category_id": 2,
+                "segmentation": [],
+                "area": 100,
+                "bbox": [0, 0, 10, 10],
+            },
+        ],
+        "categories": [
+            {"id": 1, "name": "category1", "supercategory": "category1"},
+            {"id": 2, "name": "category2", "supercategory": "category2"},
+            {"id": 3, "name": "category3", "supercategory": "category3"},
+        ],
+    }
+
+    # when
+    editor = CocoEditor(dataset)
+    editor.correct(correct_category=True)
+
+    # then
+    assert editor.get_dataset().get("images") == dataset["images"]
+    assert editor.get_dataset().get("annotations") == dataset["annotations"]
+    assert editor.get_dataset().get("categories") == [
+        dataset["categories"][0],
+        dataset["categories"][1],
+    ]
+
+    # when
+    editor = CocoEditor(dataset)
+    editor.correct(correct_category=False)
+
+    # then
+    assert editor.get_dataset() == dataset
+
+
 info = {
     "description": "COCO 2020 Dataset",
     "url": "http://cocodataset.org",
