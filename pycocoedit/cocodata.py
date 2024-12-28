@@ -129,37 +129,6 @@ class CocoEditor:
         self.filter_applied = True
         return self
 
-    def reset(self, annotation: str | dict[str, Any]) -> "CocoEditor":
-        """
-        Reset the dataset to the original state.
-        """
-
-        # TODO refactor this part. This process is equivalent to __init__ method. But, basically call __init__ method
-        #  is not recommended and mypy raises an error when calling __init__ method. error: Accessing "__init__" on
-        #  an instance is unsound, since instance.__init__ could be from an incompatible subclass
-        if isinstance(annotation, dict):
-            dataset = copy.deepcopy(annotation)
-        else:
-            with open(annotation) as f:
-                dataset = json.load(f)
-        self.images = dataset["images"]
-        self.annotations = dataset["annotations"]
-        self.categories = dataset["categories"]
-        self.licenses = dataset.get("licenses", [])
-        self.info = dataset.get("info", {})
-
-        validate_images(self.images)
-        validate_categories(self.categories)
-        validate_annotations(self.annotations)
-
-        self.image_filters = Filters()
-        self.category_filters = Filters()
-        self.annotation_filters = Filters()
-        self.licenses_filters = Filters()
-
-        self.filter_applied = False
-        return self
-
     def correct(
         self, correct_image: bool = True, correct_category: bool = False
     ) -> "CocoEditor":

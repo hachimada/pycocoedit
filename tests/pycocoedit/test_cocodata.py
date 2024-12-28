@@ -272,46 +272,6 @@ def test_add_custom_filter():
     assert editor.categories == categories
 
 
-def test_reset():
-    class SimpleInclusionFilter(BaseFilter):
-        def apply(self, data: dict) -> bool:
-            return True
-
-    simple_filter = SimpleInclusionFilter(
-        target_type=TargetType.ANNOTATION, filter_type=FilterType.INCLUSION
-    )
-
-    editor = CocoEditor(dataset)
-    editor.add_filter(
-        ImageFileNameFilter(FilterType.INCLUSION, ["image0.jpg", "image1.jpg"])
-    )
-    editor.add_filter(ImageFileNameFilter(FilterType.EXCLUSION, ["image1.jpg"]))
-
-    editor.add_filter(
-        CategoryNameFilter(FilterType.INCLUSION, ["category0", "category1"])
-    )
-    editor.add_filter(CategoryNameFilter(FilterType.EXCLUSION, ["category0"]))
-
-    editor.add_filter(simple_filter)
-    editor.apply_filter().correct()
-
-    editor.reset(dataset)
-
-    assert editor.info == info
-    assert editor.licenses == licenses
-    assert editor.images == images
-    assert editor.annotations == annotations
-    assert editor.categories == categories
-    assert len(editor.image_filters.include_filters) == 0
-    assert len(editor.image_filters.exclude_filters) == 0
-    assert len(editor.category_filters.include_filters) == 0
-    assert len(editor.category_filters.exclude_filters) == 0
-    assert len(editor.annotation_filters.include_filters) == 0
-    assert len(editor.annotation_filters.exclude_filters) == 0
-    assert len(editor.licenses_filters.include_filters) == 0
-    assert len(editor.licenses_filters.exclude_filters) == 0
-
-
 def test_get_dataset():
     editor = CocoEditor(dataset)
     assert editor.get_dataset() == dataset
