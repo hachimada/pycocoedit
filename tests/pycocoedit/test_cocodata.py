@@ -129,7 +129,7 @@ categories = [
     {"id": 3, "name": "category2", "supercategory": "category"},
 ]
 
-annotation = {
+dataset = {
     "info": info,
     "licenses": licenses,
     "images": images,
@@ -140,7 +140,7 @@ annotation = {
 
 def test_add_file_name_filter():
     # check file_name filter
-    editor = CocoEditor(annotation)
+    editor = CocoEditor(dataset)
     assert len(editor.image_filters.include_filters) == 0
     assert len(editor.image_filters.exclude_filters) == 0
 
@@ -184,7 +184,7 @@ def test_add_file_name_filter():
 
 
 def test_add_category_filter():
-    editor = CocoEditor(annotation)
+    editor = CocoEditor(dataset)
 
     # check include filter
     include_filter = CategoryNameFilter(
@@ -236,7 +236,7 @@ def test_add_custom_filter():
         def apply(self, data: dict) -> bool:
             return data["area"] > 100
 
-    editor = CocoEditor(annotation)
+    editor = CocoEditor(dataset)
     editor.add_filter(AreaInclusionFilter())
     assert len(editor.annotation_filters.include_filters) == 1
     assert len(editor.annotation_filters.exclude_filters) == 0
@@ -281,7 +281,7 @@ def test_reset():
         target_type=TargetType.ANNOTATION, filter_type=FilterType.INCLUSION
     )
 
-    editor = CocoEditor(annotation)
+    editor = CocoEditor(dataset)
     editor.add_filter(
         ImageFileNameFilter(FilterType.INCLUSION, ["image0.jpg", "image1.jpg"])
     )
@@ -295,7 +295,7 @@ def test_reset():
     editor.add_filter(simple_filter)
     editor.apply_filter().correct()
 
-    editor.reset(annotation)
+    editor.reset(dataset)
 
     assert editor.info == info
     assert editor.licenses == licenses
@@ -310,3 +310,8 @@ def test_reset():
     assert len(editor.annotation_filters.exclude_filters) == 0
     assert len(editor.licenses_filters.include_filters) == 0
     assert len(editor.licenses_filters.exclude_filters) == 0
+
+
+def test_get_dataset():
+    editor = CocoEditor(dataset)
+    assert editor.get_dataset() == dataset

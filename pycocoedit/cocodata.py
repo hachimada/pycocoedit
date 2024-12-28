@@ -162,7 +162,7 @@ class CocoEditor:
 
     def correct(
         self, correct_image: bool = True, correct_category: bool = False
-    ) -> dict:
+    ) -> "CocoEditor":
         """
         Correct data inconsistencies after applying filters.
 
@@ -174,11 +174,6 @@ class CocoEditor:
         correct_category : bool
             whether to remove categories with no annotations.
             default is False.
-
-        Returns
-        -------
-        dict
-            Corrected dataset including info, licenses, images, categories and annotations.
         """
         if not self.filter_applied:
             self.apply_filter()
@@ -221,7 +216,17 @@ class CocoEditor:
                     _categories.append(cat)
             self.categories = _categories
 
-        # TODO Correct licenses
+        return self
+
+    def get_dataset(self) -> dict[str, Any]:
+        """
+        Get the dataset as a dictionary.
+
+        Returns
+        -------
+        dict
+            Dataset including info, licenses, images, categories and annotations.
+        """
         return {
             "info": self.info,
             "licenses": self.licenses,
@@ -236,8 +241,7 @@ class CocoEditor:
         """
         Export the dataset to a json file.
         """
-        dataset = self.correct(
-            correct_image=correct_image, correct_category=correct_category
-        )
+        self.correct(correct_image=correct_image, correct_category=correct_category)
+        dataset = self.get_dataset()
         with open(file_path, "w") as f:
             json.dump(dataset, f)
