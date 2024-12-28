@@ -541,3 +541,54 @@ def test_add_custom_filter():
 def test_get_dataset():
     editor = CocoEditor(dataset)
     assert editor.get_dataset() == dataset
+
+
+def test_sample():
+    # given
+    num = 100
+    dataset = {
+        "info": {},
+        "licenses": [],
+        "images": [
+            {
+                "file_name": f"image{i}.jpg",
+                "id": i,
+                "height": 100,
+                "width": 100,
+            }
+            for i in range(num)
+        ],
+        "annotations": [
+            {
+                "id": i,
+                "image_id": i,
+                "category_id": i,
+                "segmentation": [],
+                "area": 100,
+                "bbox": [0, 0, 10, 10],
+            }
+            for i in range(num)
+        ],
+        "categories": [
+            {"id": i, "name": f"category{i}", "supercategory": f"category{i}"}
+            for i in range(num)
+        ],
+    }
+
+    # when
+    editor = CocoEditor(dataset)
+    sampled = editor.sample(10, correct_category=False)
+
+    # then
+    assert len(sampled.get("images")) == 10
+    assert len(sampled.get("annotations")) == 10
+    assert len(sampled.get("categories")) == 1000
+
+    # when
+    editor = CocoEditor(dataset)
+    sampled = editor.sample(10, correct_category=True)
+
+    # then
+    assert len(sampled.get("images")) == 10
+    assert len(sampled.get("annotations")) == 10
+    assert len(sampled.get("categories")) == 10

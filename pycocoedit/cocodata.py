@@ -1,5 +1,6 @@
 import copy
 import json
+import random
 from typing import Any
 
 from pycocoedit.filter import BaseFilter, Filters, TargetType
@@ -214,3 +215,34 @@ class CocoEditor:
         dataset = self.get_dataset()
         with open(file_path, "w") as f:
             json.dump(dataset, f)
+
+    def sample(
+        self, n: int, correct_image: bool = True, correct_category: bool = False
+    ) -> dict[str, Any]:
+        """
+        Sample n images randomly from the dataset.
+        if filter is not applied, it will be applied before sampling.
+
+        Parameters
+        ----------
+        n : int
+            Number of images to sample.
+        correct_image : bool
+            whether to remove images with no annotations after sampling.
+            default is True.
+        correct_category : bool
+            whether to remove categories with no annotations after sampling.
+            default is False.
+        """
+
+        if not self.filter_applied:
+            self.apply_filter()
+
+        if n > len(self.images):
+            raise ValueError(
+                f"Number of images to sample is greater than the number of images in the dataset. n: {n}, number of images: {len(self.images)}"
+            )
+
+        self.images = random.sample(self.images, n)
+        self.correct(correct_image, correct_category)
+        return self.get_dataset()
