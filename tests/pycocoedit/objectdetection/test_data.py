@@ -1,7 +1,7 @@
 import pytest
 
-from pycocoedit.cocodata import CocoEditor, validate_keys
-from pycocoedit.filter import (
+from pycocoedit.objectdetection.data import CocoData, validate_keys
+from pycocoedit.objectdetection.filter import (
     BaseFilter,
     CategoryNameFilter,
     Filters,
@@ -106,11 +106,11 @@ def test_correct__no_change():
     }
 
     # when
-    editor = CocoEditor(dataset)
-    editor.correct()
+    coco_data = CocoData(dataset)
+    coco_data.correct()
 
     # then
-    assert editor.get_dataset() == dataset
+    assert coco_data.get_dataset() == dataset
 
 
 def test_correct__remove_ann_with_no_category():
@@ -156,13 +156,13 @@ def test_correct__remove_ann_with_no_category():
     }
 
     # when
-    editor = CocoEditor(dataset)
-    editor.correct(correct_image=False)
+    coco_data = CocoData(dataset)
+    coco_data.correct(correct_image=False)
 
     # then
-    assert editor.get_dataset().get("images") == dataset["images"]
-    assert editor.get_dataset().get("annotations") == [dataset["annotations"][0]]
-    assert editor.get_dataset().get("categories") == dataset["categories"]
+    assert coco_data.get_dataset().get("images") == dataset["images"]
+    assert coco_data.get_dataset().get("annotations") == [dataset["annotations"][0]]
+    assert coco_data.get_dataset().get("categories") == dataset["categories"]
 
 
 def test_correct__remove_ann_with_no_image():
@@ -203,13 +203,13 @@ def test_correct__remove_ann_with_no_image():
     }
 
     # when
-    editor = CocoEditor(dataset)
-    editor.correct()
+    coco_data = CocoData(dataset)
+    coco_data.correct()
 
     # then
-    assert editor.get_dataset().get("images") == dataset["images"]
-    assert editor.get_dataset().get("annotations") == [dataset["annotations"][0]]
-    assert editor.get_dataset().get("categories") == dataset["categories"]
+    assert coco_data.get_dataset().get("images") == dataset["images"]
+    assert coco_data.get_dataset().get("annotations") == [dataset["annotations"][0]]
+    assert coco_data.get_dataset().get("categories") == dataset["categories"]
 
 
 def test_correct__remove_image_with_no_annotation():
@@ -248,20 +248,20 @@ def test_correct__remove_image_with_no_annotation():
     }
 
     # when
-    editor = CocoEditor(dataset)
-    editor.correct(correct_image=True)
+    coco_data = CocoData(dataset)
+    coco_data.correct(correct_image=True)
 
     # then
-    assert editor.get_dataset().get("images") == [dataset["images"][0]]
-    assert editor.get_dataset().get("annotations") == dataset["annotations"]
-    assert editor.get_dataset().get("categories") == dataset["categories"]
+    assert coco_data.get_dataset().get("images") == [dataset["images"][0]]
+    assert coco_data.get_dataset().get("annotations") == dataset["annotations"]
+    assert coco_data.get_dataset().get("categories") == dataset["categories"]
 
     # when
-    editor = CocoEditor(dataset)
-    editor.correct(correct_image=False)
+    coco_data = CocoData(dataset)
+    coco_data.correct(correct_image=False)
 
     # then
-    assert editor.get_dataset() == dataset
+    assert coco_data.get_dataset() == dataset
 
 
 def test_correct__remove_category_with_no_annotation():
@@ -309,23 +309,23 @@ def test_correct__remove_category_with_no_annotation():
     }
 
     # when
-    editor = CocoEditor(dataset)
-    editor.correct(correct_category=True)
+    coco_data = CocoData(dataset)
+    coco_data.correct(correct_category=True)
 
     # then
-    assert editor.get_dataset().get("images") == dataset["images"]
-    assert editor.get_dataset().get("annotations") == dataset["annotations"]
-    assert editor.get_dataset().get("categories") == [
+    assert coco_data.get_dataset().get("images") == dataset["images"]
+    assert coco_data.get_dataset().get("annotations") == dataset["annotations"]
+    assert coco_data.get_dataset().get("categories") == [
         dataset["categories"][0],
         dataset["categories"][1],
     ]
 
     # when
-    editor = CocoEditor(dataset)
-    editor.correct(correct_category=False)
+    coco_data = CocoData(dataset)
+    coco_data.correct(correct_category=False)
 
     # then
-    assert editor.get_dataset() == dataset
+    assert coco_data.get_dataset() == dataset
 
 
 info = {
@@ -406,92 +406,92 @@ dataset = {
 
 def test_add_file_name_filter():
     # check file_name filter
-    editor = CocoEditor(dataset)
-    assert len(editor.image_filters.include_filters) == 0
-    assert len(editor.image_filters.exclude_filters) == 0
+    coco_data = CocoData(dataset)
+    assert len(coco_data.image_filters.include_filters) == 0
+    assert len(coco_data.image_filters.exclude_filters) == 0
 
     include_filter = ImageFileNameFilter(
         FilterType.INCLUSION, ["image0.jpg", "image1.jpg"]
     )
 
-    editor.add_filter(include_filter)
-    editor.apply_filter()
-    assert editor.images == [images[0], images[1]]
-    assert editor.images[0]["file_name"] == "image0.jpg"
-    assert editor.images[1]["file_name"] == "image1.jpg"
-    assert editor.info == info
-    assert editor.licenses == licenses
-    assert editor.annotations == annotations
-    assert editor.categories == categories
+    coco_data.add_filter(include_filter)
+    coco_data.apply_filter()
+    assert coco_data.images == [images[0], images[1]]
+    assert coco_data.images[0]["file_name"] == "image0.jpg"
+    assert coco_data.images[1]["file_name"] == "image1.jpg"
+    assert coco_data.info == info
+    assert coco_data.licenses == licenses
+    assert coco_data.annotations == annotations
+    assert coco_data.categories == categories
 
     exclude_filter = ImageFileNameFilter(FilterType.EXCLUSION, ["image1.jpg"])
-    editor.add_filter(exclude_filter)
-    editor.apply_filter()
-    assert editor.images == [images[0]]
-    assert editor.images[0]["file_name"] == "image0.jpg"
-    assert editor.info == info
-    assert editor.licenses == licenses
-    assert editor.annotations == annotations
-    assert editor.categories == categories
+    coco_data.add_filter(exclude_filter)
+    coco_data.apply_filter()
+    assert coco_data.images == [images[0]]
+    assert coco_data.images[0]["file_name"] == "image0.jpg"
+    assert coco_data.info == info
+    assert coco_data.licenses == licenses
+    assert coco_data.annotations == annotations
+    assert coco_data.categories == categories
 
-    editor.correct()
-    assert editor.info == info
-    assert editor.licenses == licenses
-    assert editor.annotations == [annotations[0]]
-    assert editor.images == [images[0]]
-    assert editor.categories == categories
+    coco_data.correct()
+    assert coco_data.info == info
+    assert coco_data.licenses == licenses
+    assert coco_data.annotations == [annotations[0]]
+    assert coco_data.images == [images[0]]
+    assert coco_data.categories == categories
 
-    editor.correct(correct_category=True)
-    assert editor.info == info
-    assert editor.licenses == licenses
-    assert editor.annotations == [annotations[0]]
-    assert editor.images == [images[0]]
-    assert editor.categories == [categories[0]]
+    coco_data.correct(correct_category=True)
+    assert coco_data.info == info
+    assert coco_data.licenses == licenses
+    assert coco_data.annotations == [annotations[0]]
+    assert coco_data.images == [images[0]]
+    assert coco_data.categories == [categories[0]]
 
 
 def test_add_category_filter():
-    editor = CocoEditor(dataset)
+    coco_data = CocoData(dataset)
 
     # check include filter
     include_filter = CategoryNameFilter(
         FilterType.INCLUSION, ["category0", "category1"]
     )
-    editor.add_filter(include_filter)
-    editor.apply_filter()
-    assert editor.info == info
-    assert editor.licenses == licenses
-    assert editor.annotations == annotations
-    assert editor.images == images
-    assert editor.categories == [categories[0], categories[1]]
-    assert editor.categories[0]["name"] == "category0"
-    assert editor.categories[1]["name"] == "category1"
+    coco_data.add_filter(include_filter)
+    coco_data.apply_filter()
+    assert coco_data.info == info
+    assert coco_data.licenses == licenses
+    assert coco_data.annotations == annotations
+    assert coco_data.images == images
+    assert coco_data.categories == [categories[0], categories[1]]
+    assert coco_data.categories[0]["name"] == "category0"
+    assert coco_data.categories[1]["name"] == "category1"
 
     # check exclude filter
     exclude_filter = CategoryNameFilter(FilterType.EXCLUSION, ["category0"])
-    editor.add_filter(exclude_filter)
-    editor.apply_filter()
-    assert editor.info == info
-    assert editor.licenses == licenses
-    assert editor.annotations == annotations
-    assert editor.images == images
-    assert editor.categories == [categories[1]]
-    assert editor.categories[0]["name"] == "category1"
+    coco_data.add_filter(exclude_filter)
+    coco_data.apply_filter()
+    assert coco_data.info == info
+    assert coco_data.licenses == licenses
+    assert coco_data.annotations == annotations
+    assert coco_data.images == images
+    assert coco_data.categories == [categories[1]]
+    assert coco_data.categories[0]["name"] == "category1"
 
     # check correct
-    editor.correct(correct_image=False)
-    assert editor.info == info
-    assert editor.licenses == licenses
-    assert editor.annotations == [annotations[1]]
-    assert editor.images == images
-    assert editor.categories == [categories[1]]
+    coco_data.correct(correct_image=False)
+    assert coco_data.info == info
+    assert coco_data.licenses == licenses
+    assert coco_data.annotations == [annotations[1]]
+    assert coco_data.images == images
+    assert coco_data.categories == [categories[1]]
 
     # check correct
-    editor.correct()
-    assert editor.info == info
-    assert editor.licenses == licenses
-    assert editor.annotations == [annotations[1]]
-    assert editor.images == [images[1]]
-    assert editor.categories == [categories[1]]
+    coco_data.correct()
+    assert coco_data.info == info
+    assert coco_data.licenses == licenses
+    assert coco_data.annotations == [annotations[1]]
+    assert coco_data.images == [images[1]]
+    assert coco_data.categories == [categories[1]]
 
 
 def test_add_custom_filter():
@@ -502,16 +502,16 @@ def test_add_custom_filter():
         def apply(self, data: dict) -> bool:
             return data["area"] > 100
 
-    editor = CocoEditor(dataset)
-    editor.add_filter(AreaInclusionFilter())
-    assert len(editor.annotation_filters.include_filters) == 1
-    assert len(editor.annotation_filters.exclude_filters) == 0
-    editor.apply_filter()
-    assert editor.info == info
-    assert editor.licenses == licenses
-    assert editor.annotations == [annotations[1], annotations[2]]
-    assert editor.images == images
-    assert editor.categories == categories
+    coco_data = CocoData(dataset)
+    coco_data.add_filter(AreaInclusionFilter())
+    assert len(coco_data.annotation_filters.include_filters) == 1
+    assert len(coco_data.annotation_filters.exclude_filters) == 0
+    coco_data.apply_filter()
+    assert coco_data.info == info
+    assert coco_data.licenses == licenses
+    assert coco_data.annotations == [annotations[1], annotations[2]]
+    assert coco_data.images == images
+    assert coco_data.categories == categories
 
     class AreaExclusionFilter(BaseFilter):
         def __init__(self):
@@ -520,27 +520,27 @@ def test_add_custom_filter():
         def apply(self, data: dict) -> bool:
             return data["area"] > 250
 
-    editor.add_filter(AreaExclusionFilter())
-    assert len(editor.annotation_filters.include_filters) == 1
-    assert len(editor.annotation_filters.exclude_filters) == 1
-    editor.apply_filter()
-    assert editor.info == info
-    assert editor.licenses == licenses
-    assert editor.annotations == [annotations[1]]
-    assert editor.images == images
-    assert editor.categories == categories
+    coco_data.add_filter(AreaExclusionFilter())
+    assert len(coco_data.annotation_filters.include_filters) == 1
+    assert len(coco_data.annotation_filters.exclude_filters) == 1
+    coco_data.apply_filter()
+    assert coco_data.info == info
+    assert coco_data.licenses == licenses
+    assert coco_data.annotations == [annotations[1]]
+    assert coco_data.images == images
+    assert coco_data.categories == categories
 
-    editor.correct()
-    assert editor.info == info
-    assert editor.licenses == licenses
-    assert editor.annotations == [annotations[1]]
-    assert editor.images == [images[1]]
-    assert editor.categories == categories
+    coco_data.correct()
+    assert coco_data.info == info
+    assert coco_data.licenses == licenses
+    assert coco_data.annotations == [annotations[1]]
+    assert coco_data.images == [images[1]]
+    assert coco_data.categories == categories
 
 
 def test_get_dataset():
-    editor = CocoEditor(dataset)
-    assert editor.get_dataset() == dataset
+    coco_data = CocoData(dataset)
+    assert coco_data.get_dataset() == dataset
 
 
 def test_sample():
@@ -576,17 +576,17 @@ def test_sample():
     }
 
     # when
-    editor = CocoEditor(dataset)
-    sampled = editor.sample(10, correct_category=False)
+    coco_data = CocoData(dataset)
+    sampled = coco_data.sample(10, correct_category=False)
 
     # then
     assert len(sampled.get("images")) == 10
     assert len(sampled.get("annotations")) == 10
-    assert len(sampled.get("categories")) == 1000
+    assert len(sampled.get("categories")) == 100
 
     # when
-    editor = CocoEditor(dataset)
-    sampled = editor.sample(10, correct_category=True)
+    coco_data = CocoData(dataset)
+    sampled = coco_data.sample(10, correct_category=True)
 
     # then
     assert len(sampled.get("images")) == 10

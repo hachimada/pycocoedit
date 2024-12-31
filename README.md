@@ -16,8 +16,8 @@ For example, you can filter out specific images that have a certain number of an
 Example of filtering images and categories.
 
 ```python
-from pycocoedit.cocodata import CocoEditor
-from pycocoedit.filter import FilterType, ImageFileNameFilter, CategoryNameFilter
+from pycocoedit.objectdetection.data import CocoData
+from objectdetection.filter import FilterType, ImageFileNameFilter, CategoryNameFilter
 
 annotation = "path/to/annotation.json"
 new_annotation = "path/to/new_annotation.json"
@@ -27,17 +27,17 @@ file_filter = ImageFileNameFilter(FilterType.INCLUSION, ["image1.jpg", "image2.j
 # only include categories with category name "cat" and "dog"
 category_filter = CategoryNameFilter(FilterType.INCLUSION, ["cat", "dog"])
 
-coco = CocoEditor(annotation)
+coco_data = CocoData(annotation)
 # apply filters and export new annotation
-coco.add_filter(file_filter).add_filter(category_filter).apply_filter().save(new_annotation)
+coco_data.add_filter(file_filter).add_filter(category_filter).apply_filter().save(new_annotation)
 ```
 
 Example of custom filter for annotations:
 In this example, we create a custom filter that only includes annotations with bounding boxes of area less than 100.
 
 ```python
-from pycocoedit.cocodata import CocoEditor
-from pycocoedit.filter import BaseFilter, FilterType, TargetType
+from pycocoedit.objectdetection.data import CocoData
+from objectdetection.filter import BaseFilter, FilterType, TargetType
 
 
 # only include annotations with area less than 100
@@ -52,9 +52,9 @@ class SmallBboxIncludeFilter(BaseFilter):
 annotation = "path/to/annotation.json"
 new_annotation = "path/to/new_annotation.json"
 
-coco = CocoEditor(annotation)
+coco_data = CocoData(annotation)
 # apply custom filter and export new annotation
-coco.add_filter(SmallBboxIncludeFilter()).apply_filter().save(new_annotation)
+coco_data.add_filter(SmallBboxIncludeFilter()).apply_filter().save(new_annotation)
 ```
 
 ## Installation

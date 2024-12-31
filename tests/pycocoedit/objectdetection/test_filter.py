@@ -1,6 +1,6 @@
 import pytest
 
-from pycocoedit.filter import (
+from pycocoedit.objectdetection.filter import (
     BoxAreaFilter,
     CategoryNameFilter,
     FilterType,

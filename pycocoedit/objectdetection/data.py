@@ -3,7 +3,7 @@ import json
 import random
 from typing import Any
 
-from pycocoedit.filter import BaseFilter, Filters, TargetType
+from pycocoedit.objectdetection.filter import BaseFilter, Filters, TargetType
 
 
 def validate_keys(data: list[dict], required_keys: list[str], target: str) -> None:
@@ -30,9 +30,9 @@ def validate_annotations(annotations: list[dict]) -> None:
     validate_keys(annotations, required_keys, "annotation")
 
 
-class CocoEditor:
+class CocoData:
     """
-    Coco format dataset editor.
+    Coco format data.
     """
 
     def __init__(self, annotation: str | dict[str, Any]):
@@ -59,7 +59,7 @@ class CocoEditor:
 
         self.filter_applied = False
 
-    def add_filter(self, filter: BaseFilter) -> "CocoEditor":
+    def add_filter(self, filter: BaseFilter) -> "CocoData":
         """
         Add a filter.
 
@@ -79,7 +79,7 @@ class CocoEditor:
             self.licenses_filters.add(filter)
         return self
 
-    def apply_filter(self) -> "CocoEditor":
+    def apply_filter(self) -> "CocoData":
         """
         Apply filters to the dataset.
         """
@@ -132,7 +132,7 @@ class CocoEditor:
 
     def correct(
         self, correct_image: bool = True, correct_category: bool = False
-    ) -> "CocoEditor":
+    ) -> "CocoData":
         """
         Correct data inconsistencies after applying filters.
 
