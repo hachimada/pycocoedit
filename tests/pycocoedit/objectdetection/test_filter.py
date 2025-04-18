@@ -86,9 +86,7 @@ def test_category_exclude_filter(category_names, data, expected):
     ],
 )
 def test_box_area_include_filter(min_area, max_area, data, expected):
-    include_filter = BoxAreaFilter(
-        FilterType.INCLUSION, min_area=min_area, max_area=max_area
-    )
+    include_filter = BoxAreaFilter(FilterType.INCLUSION, min_area=min_area, max_area=max_area)
     assert include_filter.apply(data) == expected
 
 

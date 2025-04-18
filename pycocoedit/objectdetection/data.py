@@ -10,9 +10,7 @@ def validate_keys(data: list[dict], required_keys: list[str], target: str) -> No
     for d in data:
         missing_keys = [key for key in required_keys if key not in d]
         if missing_keys:
-            raise KeyError(
-                f"Missing keys {missing_keys} in {target} with ID: {d.get('id', 'Unknown')}"
-            )
+            raise KeyError(f"Missing keys {missing_keys} in {target} with ID: {d.get('id', 'Unknown')}")
 
 
 def validate_images(images: list[dict]) -> None:
@@ -36,7 +34,6 @@ class CocoData:
     """
 
     def __init__(self, annotation: str | dict[str, Any]):
-
         if isinstance(annotation, dict):
             dataset = copy.deepcopy(annotation)
         else:
@@ -129,9 +126,7 @@ class CocoData:
         self.filter_applied = True
         return self
 
-    def correct(
-        self, correct_image: bool = True, correct_category: bool = False
-    ) -> "CocoData":
+    def correct(self, correct_image: bool = True, correct_category: bool = False) -> "CocoData":
         """
         Correct data inconsistencies after applying filters.
 
@@ -204,9 +199,7 @@ class CocoData:
             "annotations": self.annotations,
         }
 
-    def save(
-        self, file_path: str, correct_image: bool = True, correct_category: bool = False
-    ) -> None:
+    def save(self, file_path: str, correct_image: bool = True, correct_category: bool = False) -> None:
         """
         Export the dataset to a json file.
         """
@@ -215,9 +208,7 @@ class CocoData:
         with open(file_path, "w") as f:
             json.dump(dataset, f)
 
-    def sample(
-        self, n: int, correct_image: bool = True, correct_category: bool = False
-    ) -> dict[str, Any]:
+    def sample(self, n: int, correct_image: bool = True, correct_category: bool = False) -> dict[str, Any]:
         """
         Sample n images randomly from the dataset.
         if filter is not applied, it will be applied before sampling.

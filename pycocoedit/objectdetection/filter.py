@@ -80,19 +80,14 @@ class BaseFilter(ABC):
 
 
 class Filters:
-
     def __init__(self):
         self.include_filters: list[BaseFilter] = []
         self.exclude_filters: list[BaseFilter] = []
 
     def add(self, filter: BaseFilter) -> None:
-        if filter.filter_type == FilterType.INCLUSION and isinstance(
-            filter, BaseFilter
-        ):
+        if filter.filter_type == FilterType.INCLUSION and isinstance(filter, BaseFilter):
             self.include_filters.append(filter)
-        if filter.filter_type == FilterType.EXCLUSION and isinstance(
-            filter, BaseFilter
-        ):
+        if filter.filter_type == FilterType.EXCLUSION and isinstance(filter, BaseFilter):
             self.exclude_filters.append(filter)
 
 

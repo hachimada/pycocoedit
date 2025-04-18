@@ -377,9 +377,7 @@ def test_add_file_name_filter():
     assert len(coco_data.image_filters.include_filters) == 0
     assert len(coco_data.image_filters.exclude_filters) == 0
 
-    include_filter = ImageFileNameFilter(
-        FilterType.INCLUSION, ["image0.jpg", "image1.jpg"]
-    )
+    include_filter = ImageFileNameFilter(FilterType.INCLUSION, ["image0.jpg", "image1.jpg"])
 
     coco_data.add_filter(include_filter)
     coco_data.apply_filter()
@@ -420,9 +418,7 @@ def test_add_category_filter():
     coco_data = CocoData(dataset)
 
     # check include filter
-    include_filter = CategoryNameFilter(
-        FilterType.INCLUSION, ["category0", "category1"]
-    )
+    include_filter = CategoryNameFilter(FilterType.INCLUSION, ["category0", "category1"])
     coco_data.add_filter(include_filter)
     coco_data.apply_filter()
     assert coco_data.info == info
@@ -536,10 +532,7 @@ def test_sample():
             }
             for i in range(num)
         ],
-        "categories": [
-            {"id": i, "name": f"category{i}", "supercategory": f"category{i}"}
-            for i in range(num)
-        ],
+        "categories": [{"id": i, "name": f"category{i}", "supercategory": f"category{i}"} for i in range(num)],
     }
 
     # when

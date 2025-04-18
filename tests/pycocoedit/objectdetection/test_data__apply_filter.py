@@ -78,9 +78,7 @@ COCO_DATA: dict = {
         ),
     ],
 )
-def test_exclude_combination(
-    filter1: BaseFilter, filter2: BaseFilter, is_keep_data: bool
-) -> None:
+def test_exclude_combination(filter1: BaseFilter, filter2: BaseFilter, is_keep_data: bool) -> None:
     """Verify logic of multiple exclusion filters.
 
     The sample COCO data contain **one** image / annotation pair.
@@ -144,9 +142,7 @@ def test_include_exclude_combination() -> None:
         ),
     ],
 )
-def test_include_combination(
-    filter1: BaseFilter, filter2: BaseFilter, is_keep_data: bool
-) -> None:
+def test_include_combination(filter1: BaseFilter, filter2: BaseFilter, is_keep_data: bool) -> None:
     """Verify logic of multiple inclusion filters.
 
     The sample COCO data contain **one** image / annotation pair.
