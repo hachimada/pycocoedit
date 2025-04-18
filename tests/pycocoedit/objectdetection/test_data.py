@@ -4,7 +4,6 @@ from pycocoedit.objectdetection.data import CocoData, validate_keys
 from pycocoedit.objectdetection.filter import (
     BaseFilter,
     CategoryNameFilter,
-    Filters,
     FilterType,
     ImageFileNameFilter,
     TargetType,
@@ -28,38 +27,6 @@ def test_validate_keys_failure():
         validate_keys(data, required_keys, "data item")
     # エラーメッセージの内容も確認
     assert "Missing keys ['name'] in data item with ID: 2" in str(exc_info.value)
-
-
-def test_filters_add():
-    filters = Filters()
-    assert len(filters.include_filters) == 0
-    assert len(filters.exclude_filters) == 0
-
-    class MockInclusionFilter(BaseFilter):
-        def __init__(self):
-            super().__init__(FilterType.INCLUSION, TargetType.IMAGE)
-
-        def apply(self, data: dict) -> bool:
-            return True
-
-    filters.add(MockInclusionFilter())
-    assert len(filters.include_filters) == 1
-    assert len(filters.exclude_filters) == 0
-
-    filters.add(MockInclusionFilter())
-    assert len(filters.include_filters) == 2
-    assert len(filters.exclude_filters) == 0
-
-    class MockExclusionFilter(BaseFilter):
-        def __init__(self):
-            super().__init__(FilterType.EXCLUSION, TargetType.IMAGE)
-
-        def apply(self, data: dict) -> bool:
-            return True
-
-    filters.add(MockExclusionFilter())
-    assert len(filters.include_filters) == 2
-    assert len(filters.exclude_filters) == 1
 
 
 def test_correct__no_change():

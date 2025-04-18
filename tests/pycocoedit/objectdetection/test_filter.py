@@ -1,10 +1,13 @@
 import pytest
 
 from pycocoedit.objectdetection.filter import (
+    BaseFilter,
     BoxAreaFilter,
     CategoryNameFilter,
+    Filters,
     FilterType,
     ImageFileNameFilter,
+    TargetType,
 )
 
 
@@ -87,3 +90,36 @@ def test_box_area_include_filter(min_area, max_area, data, expected):
         FilterType.INCLUSION, min_area=min_area, max_area=max_area
     )
     assert include_filter.apply(data) == expected
+
+
+def test_filters_add():
+    filters = Filters()
+    assert len(filters.include_filters) == 0
+    assert len(filters.exclude_filters) == 0
+
+    class MockInclusionFilter(BaseFilter):
+        def __init__(self):
+            super().__init__(FilterType.INCLUSION, TargetType.IMAGE)
+
+        def apply(self, data: dict) -> bool:
+            return True
+
+    filters.add(MockInclusionFilter())
+    assert len(filters.include_filters) == 1
+    assert len(filters.exclude_filters) == 0
+
+    filters.add(MockInclusionFilter())
+    assert len(filters.include_filters) == 2
+    assert len(filters.exclude_filters) == 0
+
+    class MockExclusionFilter(BaseFilter):
+        def __init__(self):
+            super().__init__(FilterType.EXCLUSION, TargetType.IMAGE)
+
+        def apply(self, data: dict) -> bool:
+            return True
+
+    filters.add(MockExclusionFilter())
+    assert len(filters.include_filters) == 2
+    assert len(filters.exclude_filters) == 1
+
