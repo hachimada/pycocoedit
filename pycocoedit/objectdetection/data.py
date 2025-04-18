@@ -121,10 +121,9 @@ class CocoData:
             if len(exclude_filters) != 0:
                 new_dicts = []
                 for d in targets[i]:
-                    for exclude_filter in exclude_filters:
-                        if not exclude_filter.apply(d):
-                            new_dicts.append(d)
-                            break
+                    should_exclude = any(ex_f.apply(d) for ex_f in exclude_filters)
+                    if not should_exclude:
+                        new_dicts.append(d)
                 update(i, new_dicts)
 
         self.filter_applied = True

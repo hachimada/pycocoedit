@@ -122,4 +122,3 @@ def test_filters_add():
     filters.add(MockExclusionFilter())
     assert len(filters.include_filters) == 2
     assert len(filters.exclude_filters) == 1
-
