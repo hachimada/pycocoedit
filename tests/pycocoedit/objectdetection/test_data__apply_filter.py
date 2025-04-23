@@ -1,5 +1,5 @@
 """
-test for pycocoedit.objectdetection.data.CocoData.apply_filter
+test for ``pycocoedit.objectdetection.data.CocoData.apply_filter``
 """
 
 import pytest
@@ -79,14 +79,14 @@ COCO_DATA: dict = {
     ],
 )
 def test_exclude_combination(filter1: BaseFilter, filter2: BaseFilter, is_keep_data: bool) -> None:
-    """Verify logic of multiple exclusion filters.
+    """Verify the logic of multiple exclusion filters.
 
-    The sample COCO data contain **one** image / annotation pair.
+    The sample COCO data contains **one** image / annotation pair.
     If any exclusion filter returns ``True``, the pair must be removed.
     If all exclusion filters return ``False``, the pair must be kept.
     """
     # given
-    coco = CocoData(COCO_DATA).add_filter(filter=filter1).add_filter(filter=filter2)
+    coco = CocoData(COCO_DATA).add_filter(filter1).add_filter(filter2)
 
     # when
     filtered = coco.apply_filter().correct()
@@ -98,12 +98,12 @@ def test_exclude_combination(filter1: BaseFilter, filter2: BaseFilter, is_keep_d
 
 
 def test_include_exclude_combination() -> None:
-    """Verify logic of inclusion and exclusion filters."""
+    """Verify the logic of inclusion and exclusion filters."""
     # given
     coco = (
         CocoData(COCO_DATA)
-        .add_filter(filter=AnnotationExcludeDummyFilter(is_exclude=True))
-        .add_filter(filter=AnnotationExcludeDummyFilter(is_exclude=False))
+        .add_filter(AnnotationExcludeDummyFilter(is_exclude=True))
+        .add_filter(AnnotationExcludeDummyFilter(is_exclude=False))
     )
 
     # when
@@ -143,13 +143,13 @@ def test_include_exclude_combination() -> None:
     ],
 )
 def test_include_combination(filter1: BaseFilter, filter2: BaseFilter, is_keep_data: bool) -> None:
-    """Verify logic of multiple inclusion filters.
+    """Verify the logic of multiple inclusion filters.
 
-    The sample COCO data contain **one** image / annotation pair.
-    If any inclusion filter returns ``True``, the pair must be kept
+    The sample COCO data contains **one** image / annotation pair.
+    If any inclusion filter returns True, the pair must be kept
     """
     # given
-    coco = CocoData(COCO_DATA).add_filter(filter=filter1).add_filter(filter=filter2)
+    coco = CocoData(COCO_DATA).add_filter(filter1).add_filter(filter2)
 
     # when
     filtered = coco.apply_filter().correct()

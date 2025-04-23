@@ -1,3 +1,10 @@
+"""
+COCO dataset editing module.
+
+This module provides functions and classes for managing and editing
+COCO format datasets for object detection tasks.
+"""
+
 import copy
 import json
 import random
@@ -6,7 +13,24 @@ from typing import Any
 from pycocoedit.objectdetection.filter import BaseFilter, Filters, TargetType
 
 
-def validate_keys(data: list[dict], required_keys: list[str], target: str) -> None:
+def _validate_keys(data: list[dict], required_keys: list[str], target: str) -> None:
+    """
+    Validate that all dictionaries in a list contain the required keys.
+
+    Parameters
+    ----------
+    data : list[dict]
+        List of dictionaries to validate.
+    required_keys : list[str]
+        List of keys that must be present in each dictionary.
+    target : str
+        Name of the data type being validated, used in error messages.
+
+    Raises
+    ------
+    KeyError
+        If any dictionary is missing required keys.
+    """
     for d in data:
         missing_keys = [key for key in required_keys if key not in d]
         if missing_keys:
@@ -14,26 +38,81 @@ def validate_keys(data: list[dict], required_keys: list[str], target: str) -> No
 
 
 def validate_images(images: list[dict]) -> None:
+    """
+    Validate image entries in a COCO dataset.
+
+    Parameters
+    ----------
+    images : list[dict]
+        List of image dictionaries to validate.
+
+    Raises
+    ------
+    KeyError
+        If any image dictionary is missing required keys "id", "file_name", "width", or "height".
+    """
     required_keys = ["id", "file_name", "width", "height"]
-    validate_keys(images, required_keys, "image")
+    _validate_keys(images, required_keys, "image")
 
 
 def validate_categories(categories: list[dict]) -> None:
+    """
+    Validate category entries in a COCO dataset.
+
+    Parameters
+    ----------
+    categories : list[dict]
+        List of category dictionaries to validate.
+
+    Raises
+    ------
+    KeyError
+        If any category dictionary is missing required keys "id", "name" or "supercategory".
+    """
     required_keys = ["id", "name", "supercategory"]
-    validate_keys(categories, required_keys, "category")
+    _validate_keys(categories, required_keys, "category")
 
 
 def validate_annotations(annotations: list[dict]) -> None:
+    """
+    Validate annotation entries in a COCO dataset.
+
+    Parameters
+    ----------
+    annotations : list[dict]
+        List of annotation dictionaries to validate.
+
+    Raises
+    ------
+    KeyError
+        If any annotation dictionary is missing required keys "id",
+        "image_id", "category_id", "bbox", "area" or "segmentation".
+    """
     required_keys = ["id", "image_id", "category_id", "bbox", "area", "segmentation"]
-    validate_keys(annotations, required_keys, "annotation")
+    _validate_keys(annotations, required_keys, "annotation")
 
 
 class CocoData:
     """
-    Coco format data.
+    Class for managing and manipulating COCO format datasets.
+
+    This class provides methods to load, filter, correct and save
+    COCO format datasets for object detection tasks.
+
+    Parameters
+    ----------
+    annotation : str or dict[str, Any]
+        Either a file path to a JSON COCO dataset file or
+        a dictionary containing the dataset.
+
+    Raises
+    ------
+    KeyError
+        If the dataset is missing required keys or entries with required fields.
     """
 
     def __init__(self, annotation: str | dict[str, Any]):
+        """Initialize a CocoData object from a file path or dictionary."""
         if isinstance(annotation, dict):
             dataset = copy.deepcopy(annotation)
         else:
@@ -56,29 +135,41 @@ class CocoData:
 
         self.filter_applied = False
 
-    def add_filter(self, filter: BaseFilter) -> "CocoData":
+    def add_filter(self, filter_: BaseFilter) -> "CocoData":
         """
         Add a filter.
 
         Parameters
         ----------
-        filter : BaseFilter
-            filter to be added.
-        """
+        filter_ : BaseFilter
+            The filter to add.
 
-        if filter.target_type == TargetType.IMAGE:
-            self.image_filters.add(filter)
-        if filter.target_type == TargetType.CATEGORY:
-            self.category_filters.add(filter)
-        if filter.target_type == TargetType.ANNOTATION:
-            self.annotation_filters.add(filter)
-        if filter.target_type == TargetType.LICENSE:
-            self.licenses_filters.add(filter)
+        Returns
+        -------
+        CocoData
+            Self reference for method chaining.
+        """
+        if filter_.target_type == TargetType.IMAGE:
+            self.image_filters.add(filter_)
+        if filter_.target_type == TargetType.CATEGORY:
+            self.category_filters.add(filter_)
+        if filter_.target_type == TargetType.ANNOTATION:
+            self.annotation_filters.add(filter_)
+        if filter_.target_type == TargetType.LICENSE:
+            self.licenses_filters.add(filter_)
         return self
 
     def apply_filter(self) -> "CocoData":
         """
-        Apply filters to the dataset.
+        Apply all added filters to the dataset.
+
+        This method processes all filters, both inclusion and exclusion,
+        across all data types (images, categories, annotations, licenses).
+
+        Returns
+        -------
+        CocoData
+            Self reference for method chaining.
         """
         targets: list[list[dict]] = [
             self.images,
@@ -94,6 +185,16 @@ class CocoData:
         ]
 
         def update(index: int, new_data: list[dict]):
+            """
+            Update the appropriate data list based on index.
+
+            Parameters
+            ----------
+            index : int
+                Index indicating which data list to update.
+            new_data : list[dict]
+                New data to replace the current list.
+            """
             if index == 0:
                 self.images = new_data
             if index == 1:
@@ -128,16 +229,23 @@ class CocoData:
 
     def correct(self, correct_image: bool = True, correct_category: bool = False) -> "CocoData":
         """
-        Correct data inconsistencies after applying filters.
+        Ensure dataset consistency after filtering.
+
+        This method removes annotations with category IDs not in categories,
+        annotations with image IDs not in images, and optionally removes
+        images with no annotations and categories with no annotations.
 
         Parameters
         ----------
-        correct_image : bool
-            whether to remove images with no annotations.
-            default is True.
-        correct_category : bool
-            whether to remove categories with no annotations.
-            default is False.
+        correct_image : bool, optional
+            Whether to remove images that have no annotations, default is True.
+        correct_category : bool, optional
+            Whether to remove categories that have no annotations, default is False.
+
+        Returns
+        -------
+        CocoData
+            Self reference for method chaining.
         """
         if not self.filter_applied:
             self.apply_filter()
@@ -201,7 +309,16 @@ class CocoData:
 
     def save(self, file_path: str, correct_image: bool = True, correct_category: bool = False) -> None:
         """
-        Export the dataset to a json file.
+        Save the dataset to a JSON file.
+
+        Parameters
+        ----------
+        file_path : str
+            Path where the JSON file will be saved.
+        correct_image : bool, optional
+            Whether to remove images with no annotations before saving, default is True.
+        correct_category : bool, optional
+            Whether to remove categories with no annotations before saving, default is False.
         """
         self.correct(correct_image=correct_image, correct_category=correct_category)
         dataset = self.get_dataset()
@@ -210,21 +327,27 @@ class CocoData:
 
     def sample(self, n: int, correct_image: bool = True, correct_category: bool = False) -> dict[str, Any]:
         """
-        Sample n images randomly from the dataset.
-        if filter is not applied, it will be applied before sampling.
+        Create a random sample of the dataset with n images.
 
         Parameters
         ----------
         n : int
             Number of images to sample.
-        correct_image : bool
-            whether to remove images with no annotations after sampling.
-            default is True.
-        correct_category : bool
-            whether to remove categories with no annotations after sampling.
-            default is False.
-        """
+        correct_image : bool, optional
+            Whether to remove images with no annotations, default is True.
+        correct_category : bool, optional
+            Whether to remove categories with no annotations, default is False.
 
+        Returns
+        -------
+        dict
+            A new sampled dataset as a dictionary.
+
+        Raises
+        ------
+        ValueError
+            If n is greater than the number of images in the dataset.
+        """
         if not self.filter_applied:
             self.apply_filter()
 
