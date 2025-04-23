@@ -1,6 +1,6 @@
 import pytest
 
-from pycocoedit.objectdetection.data import CocoData, validate_keys
+from pycocoedit.objectdetection.data import CocoData, _validate_keys
 from pycocoedit.objectdetection.filter import (
     BaseFilter,
     CategoryNameFilter,
@@ -16,7 +16,7 @@ def test_validate_keys_success():
         {"id": 2, "name": "Data 2", "category": "B"},
     ]
     required_keys = ["id", "name", "category"]
-    validate_keys(data, required_keys, "data item")
+    _validate_keys(data, required_keys, "data item")
 
 
 def test_validate_keys_failure():
@@ -24,7 +24,7 @@ def test_validate_keys_failure():
     required_keys = ["id", "name", "category"]
     # KeyErrorが発生することを確認
     with pytest.raises(KeyError) as exc_info:
-        validate_keys(data, required_keys, "data item")
+        _validate_keys(data, required_keys, "data item")
     # エラーメッセージの内容も確認
     assert "Missing keys ['name'] in data item with ID: 2" in str(exc_info.value)
 
