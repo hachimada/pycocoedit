@@ -7,7 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ 3.10.14, 3.11.9, 3.12.4 ]
+        include:
+          - python-version: "3.10.14"
+            coverage: "false"
+          - python-version: "3.11.9"
+            coverage: "false"
+          - python-version: "3.12.4"
+            coverage: "false"
+          - python-version: "3.13.3"
+            coverage: "true"
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
@@ -28,6 +36,24 @@ jobs:
         run: |
           poetry install
 
+      # ---------- en: Test + (conditionally) coverage ----------
       - name: Run tests
         run: |
-          poetry run pytest
+          if [ "${{ matrix.coverage }}" = "true" ]; then
+            poetry run pytest \
+              --cov=pycocoedit \
+              --cov-report=xml \
+              --cov-report=term-missing
+          else
+            poetry run pytest -q
+          fi
+
+      # ---------- en: Upload to Codecov -------
+      - name: Upload coverage to Codecov
+        if: ${{ matrix.coverage == 'true' }}
+        uses: codecov/codecov-action@v4
+        with:
+          file: coverage.xml     # pytest-cov が生成
+          flags: py313
+          # public リポなら token 要らず
+

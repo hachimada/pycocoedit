@@ -1,14 +1,26 @@
 [tool.poetry]
 name = "pycocoedit"
-version = "0.0.1"
+version = "0.1.0"
 description = "Advanced editing tools for COCO dataset annotations"
-authors = ["Nao-Y1996 <60519909+Nao-Y1996@users.noreply.github.com>"]
+authors = ["hachimada <60519909+hachimada@users.noreply.github.com>"]
 readme = "README.md"
 license = "Apache-2.0"
 keywords = ["COCO", "annotation", "dataset", "filter", "computer vision"]
+classifiers = [
+  "Development Status :: 4 - Beta",     
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "License :: OSI Approved :: Apache Software License",
+  "Intended Audience :: Developers",
+  "Topic :: Scientific/Engineering :: Image Recognition",
+]
 
 [tool.poetry.dependencies]
-python = ">=3.10"
+python = ">=3.10, <3.14"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -16,6 +28,7 @@ pytest = "^8.2.2"
 mypy = "^1.10.0"
 ruff = "^0.4.9"
 pre-commit = "^4.2.0"
+pytest-cov = "^6.1.1"
 
 [build-system]
 requires = ["poetry-core"]
