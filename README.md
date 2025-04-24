@@ -1,6 +1,8 @@
-from jupyter_client.session import new_id
-
 # pycocoedit
+
+[![ci](https://github.com/hachimada/pycocoedit/actions/workflows/ci.yml/badge.svg)](https://github.com/hachimada/pycocoedit/actions)
+[![codecov](https://codecov.io/gh/hachimada/pycocoedit/branch/main/graph/badge.svg)](https://codecov.io/gh/hachimada/pycocoedit)
+
 
 **pycocoedit** is a Python package for editing and analyzing COCO datasets.
 
@@ -60,7 +62,7 @@ coco_data.add_filter(SmallBboxIncludeFilter()).apply_filter().save(new_annotatio
 ## Installation
 
 ```
-git clone https://github.com/Nao-Y1996/pycocoedit.git
+git clone https://github.com/hachimada/pycocoedit.git
 cd pycocoedit
 poetry install
 ```
