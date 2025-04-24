@@ -43,7 +43,10 @@ jobs:
             poetry run pytest \
               --cov=pycocoedit \
               --cov-report=xml \
-              --cov-report=term-missing
+              --cov-branch \
+              --cov-report=term-missing \
+              --junitxml=junit.xml \
+              -o junit_family=legacy
           else
             poetry run pytest -q
           fi
@@ -55,5 +58,11 @@ jobs:
         with:
           file: coverage.xml     # pytest-cov が生成
           flags: py313
-          # public リポなら token 要らず
+          # token: ${{ secrets.CODECOV_TOKEN }}
+      
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }} && ${{ matrix.coverage == 'true' }}
+        uses: codecov/test-results-action@v1
+        # with:
+        #   token: ${{ secrets.CODECOV_TOKEN }}
 
