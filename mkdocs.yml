@@ -1,0 +1,41 @@
+site_name: pycocoedit
+site_url: https://hachimada.github.io/pycocoedit
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.tabs
+    - navigation.top
+    - content.code.copy
+    - toc.integrate          # サイドバーではなく本文側に目次
+  palette:                   # ダークモード自動切替の例
+    - scheme: default
+      primary: indigo
+      accent: indigo
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: ダークモード
+  icon:
+    repo: fontawesome/brands/github
+nav:
+  - Home: index.md
+  - API:
+    - pycocoedit:
+        - objectdetection:
+            - data: api/objectdetection/data.md
+            - filter: api/objectdetection/filter.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: ["pycocoedit"]
+          options:
+            show_root_heading: true
+            docstring_style: numpy

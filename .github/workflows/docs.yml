@@ -1,0 +1,15 @@
+name: docs
+
+on:
+  push:
+#    branches: [main]          # main への push で公開
+#    tags:     ['v*']          # バージョンタグでも公開
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - run: pip install mkdocs-material mkdocstrings[python]
+      - run: mkdocs gh-deploy --force
