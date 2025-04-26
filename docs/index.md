@@ -1,4 +1,16 @@
-# Welcome to **pycocoedit**
+---
+hide:
+  - toc
+---
+
+<div style="text-align: center;">
+  <div class="centered-logo-text-group">
+    <img src="assets/pycocoedit.png" alt="pycocoedit Logo" width="120">
+    <h1>pycocoedit</h1>
+  </div>
+</div>
+
+## What is pycocoedit?
 
 pycocoedit is a lightweight, dependency-free Python library for **querying**, **filtering**, and **rewriting**
 COCO-format
@@ -10,6 +22,14 @@ Maybe you just need the images whose filenames begin with night_?
 
 With pycocoedit you write those rules in two-or-three short, readable lines—no manual JSON surgery, no error-prone
 for-loops.
+
+<div class="install-command-container">
+  <p style="text-align:center;">
+    Get started:
+    <br/>
+    <code>pip install pycocoedit</code>
+  </p>
+</div>
 
 ## Why pycocoedit?
 
@@ -27,9 +47,7 @@ for-loops.
 
 ```python
 from pycocoedit.objectdetection.data import CocoData
-from pycocoedit.objectdetection.filter import (
-    BoxAreaFilter, CategoryNameFilter, FilterType, TargetType
-)
+from pycocoedit.objectdetection.filter import BoxAreaFilter, CategoryNameFilter, FilterType
 
 # 1. Load COCO JSON
 coco = CocoData("annotations/train.json")
@@ -44,10 +62,7 @@ cat_filter = CategoryNameFilter(
 )
 
 # 4. Apply filters and save
-(coco.add_filter(file_filter)
- .add_filter(cat_filter)
- .apply_filter()
- .save("annotations/train_city_car.json"))
+coco.add_filter(file_filter).add_filter(cat_filter).apply_filter().save("annotations.json")
 ```
 
 ## Installation
@@ -86,9 +101,3 @@ pip install pycocoedit
 
 Contributions and ideas are welcome—feel free to open an issue or pull request on GitHub!  
 © 2025 Nao Yamada · Licensed under the Apache License 2.0
-
-## API
-
-- objectdetection
-    - [`data`](api/objectdetection/data.md)
-    - [`filter`](api/objectdetection/filter.md)

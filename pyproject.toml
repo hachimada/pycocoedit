@@ -34,6 +34,7 @@ pytest-cov = "^6.1.1"
 mkdocs-material = "^9.6.12"
 mkdocs = "^1.6.1"
 mkdocstrings = {extras = ["python"], version = "^0.29.1"}
+pymdown-extensions = "^10.14.3"
 
 [build-system]
 requires = ["poetry-core"]
