@@ -3,8 +3,11 @@ name: Publish to Test PyPI
 on:
   push:
     tags:
-      - "v*.*.*"    # v0.1.0 みたいなタグPushをトリガーにする
-  workflow_dispatch:  # 手動トリガ
+      # Only tags that include α, β, and rc
+      - "v*.*.*a*"          # 0.3.0a1, v0.4.0a2 …
+      - "v*.*.*b*"          # 0.3.0b1 …
+      - "v*.*.*rc*"         # 0.3.0rc1 …
+  workflow_dispatch:
 
 jobs:
   publish-testpypi:
