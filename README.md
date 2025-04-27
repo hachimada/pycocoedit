@@ -1,8 +1,17 @@
 # pycocoedit
 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![ci](https://github.com/hachimada/pycocoedit/actions/workflows/ci.yml/badge.svg)](https://github.com/hachimada/pycocoedit/actions)
 [![codecov](https://codecov.io/gh/hachimada/pycocoedit/branch/main/graph/badge.svg)](https://codecov.io/gh/hachimada/pycocoedit)
 
+<html>
+    <h2 align="center">
+      <img src="docs/assets/pycocoedit.png" width="256"/>
+    </h2>
+    <h3 align="center">
+      An open-source lightweight Python package for editing and analyzing COCO datasets.
+    </h3>
+</html>
 
 **pycocoedit** is a Python package for editing and analyzing COCO datasets.
 
@@ -34,7 +43,7 @@ coco_data = CocoData(annotation)
 coco_data.add_filter(file_filter).add_filter(category_filter).apply_filter().save(new_annotation)
 ```
 
-Example of custom filter for annotations:
+Example of custom filter for annotations:  
 In this example, we create a custom filter that only includes annotations with bounding boxes of area less than 100.
 
 ```python
@@ -67,17 +76,36 @@ cd pycocoedit
 poetry install
 ```
 
-## Features
+## Key Features
 
-- Filter images by file name
-- Filter categories by category name
-- Filter images by custom conditions
-- Filter categories by custom conditions
-- Filter annotations by custom conditions
-- Fix inconsistencies after applying filters
+| Feature                          | What it gives you                                                                                     |
+|----------------------------------|-------------------------------------------------------------------------------------------------------|
+| **LEGO-style chainable filters** | One-liner `include` / `exclude` rules for images, annotations, categories, etc.                       |
+| **Custom rules**                 | simply inherit `BaseFilter`, implement a short apply() method, and your custom logic is ready to use. |
+| **Built-in data cleanup**        | `CocoData.correct()` - Built-in data cleanup that removes orphaned annotations & empty categories.    |
+| **Pure Python ≥ 3.10**           | Zero external deps; runs anywhere CPython runs—no C build hassle.                                     |
+| **Typed & unit-tested**          | IDE auto-completion and high confidence when refactoring.                                             |
+
+## Task Support
+
+| Task                  | Supported                            | version |
+|-----------------------|--------------------------------------|---------|
+| Object Detection      | ✅ (`pycocoedit.objectdetection`)     | 0.1.0   |
+| Image Segmentation    | ✅ (use `pycocoedit.objectdetection`) | 0.1.0   |
+| Keypoint Detection    | ❌ (future release)                   |         |
+| Panoptic Segmentation | ❌ (future release)                   |         |
+| Image Captioning      | ❌ (future release)                   |         |
+
+## Roadmap
+
+1. Image Captioning
+2. key-point support
+3. Panoptic Segmentation
+
+Contributions and ideas are welcome—feel free to open an issue or pull request on GitHub!  
 
 ## License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](https://github.com/hachimada/pycocoedit/blob/docs/initial_document/LICENSE) file for details.
 
 

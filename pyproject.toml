@@ -30,6 +30,13 @@ ruff = "^0.4.9"
 pre-commit = "^4.2.0"
 pytest-cov = "^6.1.1"
 
+[tool.poetry.group.docs.dependencies]
+mkdocs-material = "^9.6.12"
+mkdocs = "^1.6.1"
+mkdocstrings = {extras = ["python"], version = "^0.29.1"}
+pymdown-extensions = "^10.14.3"
+mkdocs-linkcheck = "^1.0.6"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
@@ -55,9 +62,6 @@ python_version = "3.10"
 strict = false
 allow_redefinition = true
 ignore_missing_imports = true
-
-#[tool.poetry.include]
-#LICENSE = { path = "LICENSE" }
 
 [tool.poetry.urls]
 homepage = "https://github.com/Nao-Y1996/pycocoedit"
