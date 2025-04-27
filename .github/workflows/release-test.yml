@@ -1,0 +1,41 @@
+name: Publish to Test PyPI
+
+on:
+  push:
+    tags:
+      - "v*.*.*"    # v0.1.0 みたいなタグPushをトリガーにする
+  workflow_dispatch:  # 手動トリガ
+
+jobs:
+  publish-testpypi:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "poetry"
+          cache-dependency-path: |
+            pyproject.toml
+            poetry.lock
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: "1.8.3"
+
+      - name: Install dependencies
+        run: poetry install --no-interaction --no-root
+
+      - name: Build package
+        run: poetry build
+
+      - name: Publish to TestPyPI
+        env:
+          POETRY_HTTP_BASIC_TEST_PYPI_USERNAME: __token__
+          POETRY_HTTP_BASIC_TEST_PYPI_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
+        run: poetry publish -r test-pypi
