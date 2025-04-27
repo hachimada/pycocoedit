@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - python-version: "3.10.0"
+          - python-version: "3.10.4"
             coverage: "false"
           - python-version: "3.11.9"
             coverage: "false"
@@ -41,7 +41,7 @@ jobs:
       - name: mypy
         run: poetry run mypy pycocoedit
 
-      # ---------- en: Test + (conditionally) coverage ----------
+      # ---------- Test + (conditionally) coverage ----------
       - name: Run tests
         run: |
           source .venv/bin/activate
@@ -57,12 +57,12 @@ jobs:
             poetry run pytest -q
           fi
 
-      # ---------- en: Upload to Codecov -------
+      # ---------- Upload to Codecov -------
       - name: Upload coverage to Codecov
         if: ${{ matrix.coverage == 'true' }}
         uses: codecov/codecov-action@v4
         with:
-          file: coverage.xml     # pytest-cov が生成
+          file: coverage.xml     # created by pytest-cov
           flags: py313
           # token: ${{ secrets.CODECOV_TOKEN }}
       
