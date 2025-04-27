@@ -26,6 +26,9 @@ jobs:
           virtualenvs-in-project: true
           installer-parallel: true
 
+      - name: Configure PyPI repository
+        run: poetry config repositories.pypi https://upload.pypi.org/legacy/
+
       - name: Publish to PyPI
         env:
           POETRY_HTTP_BASIC_PYPI_USERNAME: __token__

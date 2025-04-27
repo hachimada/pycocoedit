@@ -29,6 +29,9 @@ jobs:
           virtualenvs-in-project: true
           installer-parallel: true
 
+      - name: Configure TestPyPI repository
+        run: poetry config repositories.test-pypi https://test.pypi.org/legacy/
+
       - name: Publish to TestPyPI
         env:
           POETRY_HTTP_BASIC_TEST_PYPI_USERNAME: __token__
