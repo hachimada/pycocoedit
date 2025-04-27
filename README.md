@@ -6,7 +6,7 @@
 
 <html>
     <h2 align="center">
-      <img src="docs/assets/pycocoedit.png" width="256"/>
+      <img src="https://github.com/hachimada/pycocoedit/blob/main/docs/assets/pycocoedit.png?raw=true" alt="pycocoedit Logo" width="256">
     </h2>
     <h3 align="center">
       An open-source lightweight Python package for editing and analyzing COCO datasets.
@@ -106,6 +106,6 @@ Contributions and ideas are welcome—feel free to open an issue or pull request
 
 ## License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](https://github.com/hachimada/pycocoedit/blob/docs/initial_document/LICENSE) file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](https://github.com/hachimada/pycocoedit/blob/main/LICENSE) file for details.
 
 
