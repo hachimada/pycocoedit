@@ -2,14 +2,26 @@ name: docs
 
 on:
   push:
-#    branches: [main]          # main への push で公開
-#    tags:     ['v*']          # バージョンタグでも公開
+    branches: [main]
+  workflow_dispatch:  # 手動トリガ
+
+permissions:
+  contents: write  # gh-deploy が gh-pages ブランチへ push する権限
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
-      - run: pip install mkdocs-material mkdocstrings[python]
-      - run: mkdocs gh-deploy --force
+        with:
+          python-version: "3.11"
+
+      - name: Install docs deps
+        run: |
+          pip install mkdocs-material mkdocstrings[python]
+
+      - name: Build & deploy
+        run: |
+          mkdocs gh-deploy --force --clean --verbose

@@ -47,7 +47,11 @@ theme:
     - navigation.footer
 nav:
   - Home: index.md
-  - API Refence: api.md
+  - API Refence:
+    - Object Detection (Segmentation): api/objectdetection.md
+    - keypoint detection: api/keypointdetection.md
+    - Image Captioning: api/imagecaptioning.md
+    - Panoptic Segmentation: api/panopticsegmentation.md
 
 plugins:
   - search
