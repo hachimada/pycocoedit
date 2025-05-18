@@ -29,6 +29,7 @@ mypy = "^1.10.0"
 ruff = "^0.4.9"
 pre-commit = "^4.2.0"
 pytest-cov = "^6.1.1"
+toml = "^0.10.2"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs-material = "^9.6.12"

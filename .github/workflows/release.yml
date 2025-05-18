@@ -33,7 +33,7 @@ jobs:
 
           echo "Tag version (from GitHub): $CLEAN_TAG"
 
-          CURRENT_VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")
+          CURRENT_VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')["tool"]["poetry"]['version'])")
 
           echo "Version in pyproject.toml: $CURRENT_VERSION"
 
