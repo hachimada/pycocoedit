@@ -5,8 +5,6 @@ on:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
       - "v[0-9]+.[0-9]+.[0-9]+rc[0-9]+"
-    branches:
-      - "release/**"
 
 jobs:
   publish-pypi:
@@ -15,6 +13,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # include tag
+
+      - name: Check pushed tag on release/** branch
+        run: |
+          branches=$(git branch -r --contains "$GITHUB_SHA" | grep 'origin/release/')
+          if [ -z "$branches" ]; then
+            echo "Tag is not on a release/** branch. Skipping..." 
+            exit 0
+          fi
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -66,7 +74,7 @@ jobs:
         env:
           POETRY_HTTP_BASIC_TEST_PYPI_USERNAME: __token__
           POETRY_HTTP_BASIC_TEST_PYPI_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
-        run: echo "Publishing to TestPyPI" && poetry publish -r test-pypi --skip-existing --build --no-interaction
+        run: echo "Publishing to TestPyPI" # && poetry publish -r test-pypi --skip-existing --build --no-interaction
 
       - name: Configure PyPI repository
         if: steps.version_check.outputs.deploy_target == 'pypi'
@@ -77,4 +85,4 @@ jobs:
         env:
           POETRY_HTTP_BASIC_PYPI_USERNAME: __token__
           POETRY_HTTP_BASIC_PYPI_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-        run: echo "Publishing to PyPI" && poetry publish -r pypi --skip-existing --build --no-interaction
+        run: echo "Publishing to PyPI" # && poetry publish -r pypi --skip-existing --build --no-interaction
