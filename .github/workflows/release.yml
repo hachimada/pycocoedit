@@ -5,6 +5,8 @@ on:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
       - "v[0-9]+.[0-9]+.[0-9]+rc[0-9]+"
+    branches:
+      - "release/**"
 
 jobs:
   publish-pypi:
@@ -64,8 +66,7 @@ jobs:
         env:
           POETRY_HTTP_BASIC_TEST_PYPI_USERNAME: __token__
           POETRY_HTTP_BASIC_TEST_PYPI_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
-          # run: poetry publish -r test-pypi --skip-existing --build --no-interaction
-        run: echo "Publishing to TestPyPI"
+        run: echo "Publishing to TestPyPI" && poetry publish -r test-pypi --skip-existing --build --no-interaction
 
       - name: Configure PyPI repository
         if: steps.version_check.outputs.deploy_target == 'pypi'
@@ -76,5 +77,4 @@ jobs:
         env:
           POETRY_HTTP_BASIC_PYPI_USERNAME: __token__
           POETRY_HTTP_BASIC_PYPI_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-        # run: poetry publish -r pypi --skip-existing --build --no-interaction
-        run: echo "Publishing to PyPI"
+        run: echo "Publishing to PyPI" && poetry publish -r pypi --skip-existing --build --no-interaction
