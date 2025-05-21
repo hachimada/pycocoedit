@@ -1,0 +1,93 @@
+name: Publish to PyPI
+
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+      - "[0-9]+.[0-9]+.[0-9]+rc[0-9]+"
+
+jobs:
+  publish-pypi:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # include tag
+
+      - name: Check pushed tag on release/** branch
+        id: check_branch
+        run: |
+          if git branch -r --contains "$GITHUB_SHA" | grep -q 'origin/release/'; then
+            echo "should_publish=true"  >> "$GITHUB_OUTPUT"
+            echo "Tag is on release/** branch. Continue."
+          else
+            echo "should_publish=false" >> "$GITHUB_OUTPUT"
+            echo "Tag is NOT on release/** branch. Skip publish."
+          fi
+
+      - name: Set up Python
+        if: steps.check_branch.outputs.should_publish == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: install toml
+        if: steps.check_branch.outputs.should_publish == 'true'
+        run: python -m pip install toml
+
+      # Step to compare the version by tag and the version in pyproject.toml
+      - name: Determine and check version
+        if: steps.check_branch.outputs.should_publish == 'true'
+        id: version_check
+        run: |
+          TAG_REF="${GITHUB_REF_NAME}"
+          TAG="${TAG_REF#refs/tags/}"
+
+          echo "Tag version (from GitHub): $TAG"
+
+          CURRENT_VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')['tool']['poetry']['version'])")
+
+          echo "Version in pyproject.toml: $CURRENT_VERSION"
+
+          if [ "$CURRENT_VERSION" != "$TAG" ]; then
+            echo "ERROR: Version mismatch. Tag=$TAG, pyproject.toml=$CURRENT_VERSION"
+            exit 1
+          fi
+
+          if [[ "$TAG" == *"rc"* ]]; then
+            echo "deploy_target=testpypi" >> $GITHUB_OUTPUT
+          else
+            echo "deploy_target=pypi" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install Poetry
+        if: steps.check_branch.outputs.should_publish == 'true'
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+
+      - name: Configure TestPyPI repository
+        if: steps.check_branch.outputs.should_publish == 'true' && steps.version_check.outputs.deploy_target == 'testpypi'
+        run: poetry config repositories.test-pypi https://test.pypi.org/legacy/
+
+      - name: Publish to TestPyPI
+        if: steps.check_branch.outputs.should_publish == 'true' && steps.version_check.outputs.deploy_target == 'testpypi'
+        env:
+          POETRY_HTTP_BASIC_TEST_PYPI_USERNAME: __token__
+          POETRY_HTTP_BASIC_TEST_PYPI_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
+        run: echo "Publishing to TestPyPI" && poetry publish -r test-pypi --skip-existing --build --no-interaction
+
+      - name: Configure PyPI repository
+        if: steps.check_branch.outputs.should_publish == 'true' && steps.version_check.outputs.deploy_target == 'pypi'
+        run: poetry config repositories.pypi https://upload.pypi.org/legacy/
+
+      - name: Publish to PyPI
+        if: steps.check_branch.outputs.should_publish == 'true' && steps.version_check.outputs.deploy_target == 'pypi'
+        env:
+          POETRY_HTTP_BASIC_PYPI_USERNAME: __token__
+          POETRY_HTTP_BASIC_PYPI_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: echo "Publishing to PyPI" && poetry publish -r pypi --skip-existing --build --no-interaction
