@@ -163,7 +163,7 @@ class ImageFileNameFilter(BaseFilter):
         Returns
         -------
         bool
-            True if the image file name is in the filter's file_names list,
+            True if the image filename is in the filter's file_names list,
             False otherwise.
         """
         return data["file_name"] in self.file_names
