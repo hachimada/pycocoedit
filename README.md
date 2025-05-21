@@ -1,7 +1,7 @@
 # pycocoedit
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![ci](https://github.com/hachimada/pycocoedit/actions/workflows/ci.yml/badge.svg)](https://github.com/hachimada/pycocoedit/actions)
+[![CI](https://github.com/hachimada/pycocoedit/actions/workflows/ci.yml/badge.svg)](https://github.com/hachimada/pycocoedit/actions)
 [![codecov](https://codecov.io/gh/hachimada/pycocoedit/branch/main/graph/badge.svg)](https://codecov.io/gh/hachimada/pycocoedit)
 
 <html>
