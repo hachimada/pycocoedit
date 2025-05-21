@@ -2,6 +2,9 @@ name: CI
 
 # Tests doesn't run if you push without a PR, please create a PR to run tests.
 on:
+  push:
+    branches:
+      - main
   pull_request:
   workflow_dispatch:
 
