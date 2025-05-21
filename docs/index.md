@@ -12,7 +12,7 @@ hide:
 
 ## What is pycocoedit?
 
-pycocoedit is a lightweight, dependency-free Python library for **querying**, **filtering**, and **rewriting**
+pycocoedit is a lightweight Python library for **querying**, **filtering**, and **rewriting**
 COCO-format
 annotation files.
 
@@ -39,9 +39,6 @@ for-loops.
 - **Automatic data cleanup**  
   Removes annotations with invalid category or image IDs, and optionally cleans out images or categories without
   annotations.
-
-- **Zero external dependencies**  
-  Runs anywhere Python does—install with just `pip install pycocoedit`, perfect for Colab or CI environments.
 
 ## Quick Start
 
