@@ -97,4 +97,4 @@ pip install pycocoedit
 3. Panoptic Segmentation
 
 Contributions and ideas are welcome—feel free to open an issue or pull request on GitHub!  
-© 2025 Nao Yamada · Licensed under the Apache License 2.0
+© 2025 hachimada · Licensed under the Apache License 2.0
