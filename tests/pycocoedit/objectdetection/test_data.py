@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 from pycocoedit.objectdetection.data import CocoData, _validate_keys
@@ -441,3 +443,90 @@ def test_sample():
     assert len(sampled.get("images")) == 10
     assert len(sampled.get("annotations")) == 10
     assert len(sampled.get("categories")) == 10
+
+
+class TestSave:
+    @staticmethod
+    def _make_base_dataset() -> dict:
+        """
+        Return a minimal COCO‑like dataset.
+
+        * two images (id 1, 2)
+        * one annotation (for image id 1)
+        * two categories (id 1 is used, id 2 is isolated)
+        """
+        return {
+            "info": {},
+            "licenses": [],
+            "images": [
+                {"file_name": "img0.jpg", "id": 1, "height": 100, "width": 100},
+                {"file_name": "img1.jpg", "id": 2, "height": 200, "width": 200},
+            ],
+            "annotations": [
+                {
+                    "id": 1,
+                    "image_id": 1,
+                    "category_id": 1,
+                    "segmentation": [],
+                    "area": 100,
+                    "bbox": [0, 0, 10, 10],
+                }
+            ],
+            "categories": [
+                {"id": 1, "name": "cat", "supercategory": "cat"},
+                {"id": 2, "name": "dog", "supercategory": "dog"},
+            ],
+        }
+
+    def test_save_basic(self, tmp_path):
+        # given
+        ds = self._make_base_dataset()
+        coco = CocoData(ds)
+        out_path = tmp_path / "out.json"
+
+        # when
+        coco.save(out_path.as_posix())
+
+        # then
+        with out_path.open() as f:
+            loaded = json.load(f)
+        assert loaded == coco.get_dataset()
+
+    def test_save_correct_image_false(self, tmp_path):
+        # given: image id 2 is isolated (no annotation)
+        ds = self._make_base_dataset()
+        coco = CocoData(ds)
+        out_path = tmp_path / "keep_isolated_img.json"
+
+        # when
+        coco.save(out_path.as_posix(), correct_image=False)
+
+        # then
+        with out_path.open() as f:
+            loaded = json.load(f)
+        assert len(loaded["images"]) == 2  # isolated image kept
+        assert len(loaded["annotations"]) == 1  # annotation count unchanged
+
+    def test_save_correct_category_true(self, tmp_path):
+        # given: category id 2 is isolated (unused)
+        ds = self._make_base_dataset()
+        coco = CocoData(ds)
+        out_path = tmp_path / "rm_isolated_cat.json"
+
+        # when
+        coco.save(out_path.as_posix(), correct_category=True)
+
+        # then
+        with out_path.open() as f:
+            loaded = json.load(f)
+        assert {c["id"] for c in loaded["categories"]} == {1}  # isolated category removed
+
+    def test_save_to_nonexistent_dir(self, tmp_path):
+        # given
+        ds = self._make_base_dataset()
+        coco = CocoData(ds)
+        out_path = tmp_path / "no_dir" / "out.json"
+
+        # when / then
+        with pytest.raises(FileNotFoundError):
+            coco.save(out_path.as_posix())
