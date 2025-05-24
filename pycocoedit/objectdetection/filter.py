@@ -40,14 +40,11 @@ class TargetType(Enum):
         Target type for annotation filters.
     CATEGORY : str
         Target type for category filters.
-    LICENSE : str
-        Target type for license filters.
     """
 
     IMAGE = "image"
     ANNOTATION = "annotation"
     CATEGORY = "category"
-    LICENSE = "license"
 
 
 class BaseFilter(ABC):
@@ -97,9 +94,6 @@ class BaseFilter(ABC):
             - element of the images in the COCO format
             - element of the annotations in the COCO format
             - element of the categories in the COCO format
-            - element of the licenses in the COCO format
-            - info in the COCO format
-            - other dict elements
         """
         raise NotImplementedError  # pragma: no cover
 
