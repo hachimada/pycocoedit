@@ -222,10 +222,10 @@ class BoxAreaFilter(BaseFilter):
 
     @override
     def apply(self, data: dict) -> bool:
-        if self.min_area and self.max_area:
+        if self.min_area is not None and self.max_area is not None:
             return self.min_area <= data["area"] <= self.max_area
-        elif self.min_area:
+        elif self.min_area is not None:
             return self.min_area <= data["area"]
-        elif self.max_area:
+        elif self.max_area is not None:
             return data["area"] <= self.max_area
         return True

@@ -122,6 +122,9 @@ def test_category_exclude_filter(category_names, data, expected):
         (100, None, {"area": 99}, False),
         (100, None, {"area": 100}, True),
         (100, None, {"area": 101}, True),
+        (0, 10, {"area": 0}, True),
+        (0, 10, {"area": 11}, False),
+        (0, None, {"area": 5}, True),
     ],
 )
 def test_box_area_include_filter(min_area, max_area, data, expected):
