@@ -214,6 +214,60 @@ class TestCorrect:
         # then
         assert coco_data.get_dataset() == dataset
 
+    def test_correct_readded_filter(self):
+        """Verify that a re-added filter is also corrected."""
+
+        # given
+        dataset = {
+            "info": {},
+            "licenses": [],
+            "images": [
+                {"file_name": "image1.jpg", "id": 1, "height": 100, "width": 100},
+                {"file_name": "image2.jpg", "id": 2, "height": 200, "width": 200},
+            ],
+            "annotations": [
+                {
+                    "id": 1,
+                    "image_id": 1,
+                    "category_id": 1,
+                    "segmentation": [],
+                    "area": 100,
+                    "bbox": [0, 0, 10, 10],
+                },
+                {
+                    "id": 2,
+                    "image_id": 2,
+                    "category_id": 2,
+                    "segmentation": [],
+                    "area": 100,
+                    "bbox": [0, 0, 10, 10],
+                },
+            ],
+            "categories": [
+                {"id": 1, "name": "cat1", "supercategory": "cat"},
+                {"id": 2, "name": "cat2", "supercategory": "cat"},
+            ],
+        }
+        coco = CocoData(dataset)
+
+        # when: Apply first filter
+        coco.add_filter(ImageFileNameFilter(FilterType.EXCLUSION, ["image1.jpg"]))
+        result1 = coco.apply_filter().correct().get_dataset()
+
+        # then: added filter should be corrected
+        assert result1["images"] == dataset["images"][1:]  # type: ignore[index]
+        assert result1["annotations"] == dataset["annotations"][1:]  # type: ignore[index]
+        assert result1["categories"] == dataset["categories"]
+
+        # when: Add second filter
+        coco.add_filter(ImageFileNameFilter(FilterType.EXCLUSION, ["image2.jpg"]))
+        result2 = coco.apply_filter().correct().get_dataset()
+
+        # then: added filter should be corrected
+        assert result2["images"] == []
+        assert result2["annotations"] == []
+        assert result2["categories"] == dataset["categories"]
+
 
 info = {
     "description": "COCO 2020 Dataset",
