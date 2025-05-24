@@ -122,7 +122,7 @@ class CocoData:
         self.annotations: list[dict] = dataset["annotations"]
         self.categories: list[dict] = dataset["categories"]
         self.licenses: list[dict] = dataset.get("licenses", [])
-        self.info: dict = dataset.get("info", {})
+        self.info: dict[str, Any] = dataset.get("info", {})
 
         validate_images(self.images)
         validate_categories(self.categories)
@@ -131,7 +131,6 @@ class CocoData:
         self.image_filters: Filters = Filters()
         self.category_filters: Filters = Filters()
         self.annotation_filters: Filters = Filters()
-        self.licenses_filters: Filters = Filters()
 
         self.filter_applied = False
 
@@ -155,8 +154,6 @@ class CocoData:
             self.category_filters.add(filter_)
         if filter_.target_type == TargetType.ANNOTATION:
             self.annotation_filters.add(filter_)
-        if filter_.target_type == TargetType.LICENSE:
-            self.licenses_filters.add(filter_)
 
         # a new filter means filters need to be reapplied
         self.filter_applied = False
@@ -167,7 +164,7 @@ class CocoData:
         Apply all added filters to the dataset.
 
         This method processes all filters, both inclusion and exclusion,
-        across all data types (images, categories, annotations, licenses).
+        across all data types (images, categories, annotations).
 
         Returns
         -------
@@ -178,13 +175,11 @@ class CocoData:
             self.images,
             self.categories,
             self.annotations,
-            self.licenses,
         ]
         all_filters: list[Filters] = [
             self.image_filters,
             self.category_filters,
             self.annotation_filters,
-            self.licenses_filters,
         ]
 
         def update(index: int, new_data: list[dict]):
@@ -204,8 +199,6 @@ class CocoData:
                 self.categories = new_data
             if index == 2:
                 self.annotations = new_data
-            if index == 3:
-                self.licenses = new_data
 
         for i in range(len(targets)):
             filters: Filters = all_filters[i]
