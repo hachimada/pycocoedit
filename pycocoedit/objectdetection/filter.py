@@ -72,9 +72,9 @@ class BaseFilter(ABC):
 
     def __init__(self, filter_type: FilterType, target_type: TargetType):
         if not isinstance(filter_type, FilterType) or filter_type is None:
-            raise ValueError("filter_type must be a FilterType and not None.")
+            raise TypeError("filter_type must be a FilterType and not None.")
         if not isinstance(target_type, TargetType) or target_type is None:
-            raise ValueError("target_type must be a TargetType and not None.")
+            raise TypeError("target_type must be a TargetType and not None.")
         self.filter_type: FilterType = filter_type
         self.target_type: TargetType = target_type
 
@@ -101,7 +101,7 @@ class BaseFilter(ABC):
             - info in the COCO format
             - other dict elements
         """
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
 
 class Filters:

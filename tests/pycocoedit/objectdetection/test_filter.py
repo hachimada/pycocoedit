@@ -11,7 +11,46 @@ from pycocoedit.objectdetection.filter import (
 )
 
 
-# ImageFileNameFilter(include)のテスト
+class TestBaseFilterGeneral:
+    """General unit tests for BaseFilter."""
+
+    def test_cannot_instantiate(self) -> None:
+        """Ensure BaseFilter cannot be instantiated while abstract methods remain."""
+        with pytest.raises(TypeError):
+            BaseFilter(FilterType.INCLUSION, TargetType.IMAGE)  # type: ignore[abstract]
+
+    def test_invalid_types(self) -> None:
+        """Passing invalid filter_type or target_type should raise TypeError."""
+
+        class DummyFilter(BaseFilter):
+            def __init__(self, filter_type, target_type) -> None:
+                super().__init__(filter_type, target_type)
+
+            def apply(self, data: dict) -> bool:
+                return True  # pragma: no cover
+
+        # filter_type is not an instance of FilterType
+        with pytest.raises(TypeError):
+            DummyFilter(object, TargetType.IMAGE)
+
+        # target_type is not an instance of TargetType
+        with pytest.raises(TypeError):
+            DummyFilter(FilterType.INCLUSION, object)
+
+    def test_apply_override(self) -> None:
+        """A subclass that overrides apply should return the value provided by the override."""
+
+        class AlwaysTrueFilter(BaseFilter):
+            def __init__(self) -> None:
+                super().__init__(FilterType.INCLUSION, TargetType.IMAGE)
+
+            def apply(self, data: dict) -> bool:
+                return True
+
+        filt = AlwaysTrueFilter()
+        assert filt.apply({}) is True
+
+
 @pytest.mark.parametrize(
     "file_names, data, expected",
     [
@@ -100,7 +139,7 @@ def test_filters_add():
             super().__init__(FilterType.INCLUSION, TargetType.IMAGE)
 
         def apply(self, data: dict) -> bool:
-            return True
+            return True  # pragma: no cover
 
     filters.add(MockInclusionFilter())
     assert len(filters.include_filters) == 1
@@ -115,7 +154,7 @@ def test_filters_add():
             super().__init__(FilterType.EXCLUSION, TargetType.IMAGE)
 
         def apply(self, data: dict) -> bool:
-            return True
+            return True  # pragma: no cover
 
     filters.add(MockExclusionFilter())
     assert len(filters.include_filters) == 2

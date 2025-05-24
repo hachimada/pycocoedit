@@ -31,6 +31,35 @@ def test_validate_keys_failure():
     assert "Missing keys ['name'] in data item with ID: 2" in str(exc_info.value)
 
 
+def test_init(tmp_path):
+    # given
+    dataset = {
+        "info": {},
+        "licenses": [],
+        "images": [
+            {"file_name": "image0.jpg", "id": 1, "height": 100, "width": 100},
+        ],
+        "annotations": [
+            {"id": 1, "image_id": 1, "category_id": 1, "segmentation": [], "area": 100, "bbox": [0, 0, 10, 10]},
+        ],
+        "categories": [
+            {"id": 1, "name": "category1", "supercategory": "category1"},
+        ],
+    }
+
+    annotaion_file = tmp_path / "annotations.json"
+    with annotaion_file.open("w") as f:
+        json.dump(dataset, f)
+
+    # when
+    coco_data1 = CocoData(dataset)
+    coco_data2 = CocoData(str(annotaion_file))
+
+    # then
+    assert coco_data1.get_dataset() == dataset
+    assert coco_data2.get_dataset() == dataset
+
+
 class TestCorrect:
     def test_no_change(self):
         # given
