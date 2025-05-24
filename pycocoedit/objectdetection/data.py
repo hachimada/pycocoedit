@@ -157,6 +157,9 @@ class CocoData:
             self.annotation_filters.add(filter_)
         if filter_.target_type == TargetType.LICENSE:
             self.licenses_filters.add(filter_)
+
+        # a new filter means filters need to be reapplied
+        self.filter_applied = False
         return self
 
     def apply_filter(self) -> "CocoData":
