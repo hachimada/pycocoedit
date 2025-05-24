@@ -15,9 +15,9 @@
 
 **pycocoedit** is a Python package for editing and analyzing COCO datasets.
 
-It is particularly useful for specifying which images, annotations, categories, or licenses to include or exclude from your dataset.
+It is particularly useful for specifying which images, annotations, or categories to include or exclude from your dataset.
 
-With **pycocoedit**, you can apply custom filters to your dataset. These filters allow you to control inclusion or exclusion based on custom conditions for images, categories, annotations, and licenses.
+With **pycocoedit**, you can apply custom filters to your dataset. These filters allow you to control inclusion or exclusion based on custom conditions for images, categories, and annotations.
 
 For example, you can filter out specific images that have a certain number of annotations or exclude annotations with bounding boxes of a certain aspect ratio.
 
@@ -28,7 +28,7 @@ Example of filtering images and categories.
 
 ```python
 from pycocoedit.objectdetection.data import CocoData
-from objectdetection.filter import FilterType, ImageFileNameFilter, CategoryNameFilter
+from pycocoedit.objectdetection.filter import FilterType, ImageFileNameFilter, CategoryNameFilter
 
 annotation = "path/to/annotation.json"
 new_annotation = "path/to/new_annotation.json"
@@ -48,7 +48,7 @@ In this example, we create a custom filter that only includes annotations with b
 
 ```python
 from pycocoedit.objectdetection.data import CocoData
-from objectdetection.filter import BaseFilter, FilterType, TargetType
+from pycocoedit.objectdetection.filter import BaseFilter, FilterType, TargetType
 
 
 # only include annotations with area less than 100
