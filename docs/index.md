@@ -68,8 +68,6 @@ coco.add_filter(file_filter).add_filter(cat_filter).apply_filter().save("annotat
 pip install pycocoedit
 ```
 
-**No external dependencies required.**
-
 ## Key Features
 
 | Feature                          | What it gives you                                                                                     |
@@ -77,15 +75,14 @@ pip install pycocoedit
 | **LEGO-style chainable filters** | One-liner `include` / `exclude` rules for images, annotations, categories, etc.                       |
 | **Custom rules**                 | simply inherit `BaseFilter`, implement a short apply() method, and your custom logic is ready to use. |
 | **Built-in data cleanup**        | `CocoData.correct()` - Built-in data cleanup that removes orphaned annotations & empty categories.    |
-| **Pure Python ≥ 3.10**           | Zero external deps; runs anywhere CPython runs—no C build hassle.                                     |
 | **Typed & unit-tested**          | IDE auto-completion and high confidence when refactoring.                                             |
 
 ## Task Support
 
 | Task                  | Supported                            | version |
 |-----------------------|--------------------------------------|---------|
-| Object Detection      | ✅ (`pycocoedit.objectdetection`)     | 0.1.0   |
-| Image Segmentation    | ✅ (use `pycocoedit.objectdetection`) | 0.1.0   |
+| Object Detection      | ✅ (`pycocoedit.objectdetection`)     | 0.0.1   |
+| Image Segmentation    | ✅ (use `pycocoedit.objectdetection`) | 0.0.1   |
 | Keypoint Detection    | ❌ (future release)                   |         |
 | Panoptic Segmentation | ❌ (future release)                   |         |
 | Image Captioning      | ❌ (future release)                   |         |
