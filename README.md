@@ -1,8 +1,9 @@
 # pycocoedit
 
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache_2.0-orange.svg)](LICENSE)
 [![CI](https://github.com/hachimada/pycocoedit/actions/workflows/ci.yml/badge.svg)](https://github.com/hachimada/pycocoedit/actions)
 [![codecov](https://codecov.io/gh/hachimada/pycocoedit/branch/main/graph/badge.svg)](https://codecov.io/gh/hachimada/pycocoedit)
+![Python Versions](https://img.shields.io/pypi/pyversions/pycocoedit)
 
 <html>
     <h2 align="center">
@@ -71,9 +72,7 @@ coco_data.add_filter(SmallBboxIncludeFilter()).apply_filter().save(new_annotatio
 ## Installation
 
 ```
-git clone https://github.com/hachimada/pycocoedit.git
-cd pycocoedit
-poetry install
+pip install pycocoedit
 ```
 
 ## Key Features
@@ -83,15 +82,14 @@ poetry install
 | **LEGO-style chainable filters** | One-liner `include` / `exclude` rules for images, annotations, categories, etc.                       |
 | **Custom rules**                 | simply inherit `BaseFilter`, implement a short apply() method, and your custom logic is ready to use. |
 | **Built-in data cleanup**        | `CocoData.correct()` - Built-in data cleanup that removes orphaned annotations & empty categories.    |
-| **Pure Python ≥ 3.10**           | Zero external deps; runs anywhere CPython runs—no C build hassle.                                     |
 | **Typed & unit-tested**          | IDE auto-completion and high confidence when refactoring.                                             |
 
 ## Task Support
 
 | Task                  | Supported                            | version |
 |-----------------------|--------------------------------------|---------|
-| Object Detection      | ✅ (`pycocoedit.objectdetection`)     | 0.1.0   |
-| Image Segmentation    | ✅ (use `pycocoedit.objectdetection`) | 0.1.0   |
+| Object Detection      | ✅ (`pycocoedit.objectdetection`)     | 0.0.1   |
+| Image Segmentation    | ✅ (use `pycocoedit.objectdetection`) | 0.0.1   |
 | Keypoint Detection    | ❌ (future release)                   |         |
 | Panoptic Segmentation | ❌ (future release)                   |         |
 | Image Captioning      | ❌ (future release)                   |         |
